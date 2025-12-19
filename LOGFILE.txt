@@ -10,8 +10,6 @@
    🔮 验证未来 (Validation)...
    📊 验证结果: Val Loss = 2.8875
    🔥 训练当下 (Training)...
-C:\Users\makai\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\utils\checkpoint.py:1399: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
-  with device_autocast_ctx, torch.cpu.amp.autocast(**cpu_autocast_kwargs), recompute_context:  # type: ignore[attr-defined]
       ⚡ Step 3400/3413 | Loss: 1.9180 | Grad: 3.02 | Energy: 115.3 | Speed: 390ms (7869 tok/s) | VRAM: 0.20/0.55GBB
    ✅ Chunk 1 完成 Summary:
       Train: 2.3207 | Val: 2.8875 | Diff: +0.5668
@@ -328,8 +326,6 @@ And the floor walk in the la
 
 📜 [Thought Stream]:
 The noises started to play. They played together in their train. They are angry." The sad.
-<|endoftext|>
-
 Lily was a snacks and lady quite. Sally lay and weere trucks to the party. She was full and her
 
 ==================================================
@@ -378,4 +374,4 @@ Lily was a snacks and lady quite. Sally lay and weere trucks to the party. She w
    📊 验证结果: Val Loss = 1.0117
    🔥 训练当下 (Training)...
       ⚡ Step 2650/3413 | Loss: 1.0171 | Grad: 1.14 | Energy: 64.4 | Speed: 302ms (10174 tok/s) | VRAM: 0.20/0.63GB
-🛑 监测到中断，紧急保存...
+
