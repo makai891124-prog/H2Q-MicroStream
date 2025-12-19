@@ -1,0 +1,381 @@
+🌊 H2Q-ICU Monitor Online: NVIDIA GeForce RTX 4070 Ti SUPER
+   [Mode: Deep Analysis] [Metrics: Grad/VRAM/TPS/Diff]
+🔄 恢复存档: h2q_rolling.pt
+🔖 [时间之轮] 回溯至偏移量: 40.03 MB
+⏳ [Init] 加载初始时间块 (Chunk T)...
+🚀 启动深度监控 (Deep Monitor Active)...
+
+==================================================
+🧩 CHUNK 0: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 2.8875
+   🔥 训练当下 (Training)...
+C:\Users\makai\AppData\Local\Programs\Python\Python310\lib\site-packages\torch\utils\checkpoint.py:1399: FutureWarning: `torch.cpu.amp.autocast(args...)` is deprecated. Please use `torch.amp.autocast('cpu', args...)` instead.
+  with device_autocast_ctx, torch.cpu.amp.autocast(**cpu_autocast_kwargs), recompute_context:  # type: ignore[attr-defined]
+      ⚡ Step 3400/3413 | Loss: 1.9180 | Grad: 3.02 | Energy: 115.3 | Speed: 390ms (7869 tok/s) | VRAM: 0.20/0.55GBB
+   ✅ Chunk 1 完成 Summary:
+      Train: 2.3207 | Val: 2.8875 | Diff: +0.5668
+      Time: 1204.7s | Progress: 60.0 MB
+
+==================================================
+🧩 CHUNK 1: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.8169
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.3695 | Grad: 2.17 | Energy: 112.0 | Speed: 338ms (9086 tok/s) | VRAM: 0.20/0.63GBB
+   ✅ Chunk 2 完成 Summary:
+      Train: 1.5694 | Val: 1.8169 | Diff: +0.2475
+      Time: 1302.9s | Progress: 70.1 MB
+
+==================================================
+🧩 CHUNK 2: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.3515
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.2141 | Grad: 2.20 | Energy: 105.2 | Speed: 346ms (8874 tok/s) | VRAM: 0.20/0.63GBB
+   ✅ Chunk 3 完成 Summary:
+      Train: 1.3323 | Val: 1.3515 | Diff: +0.0193
+      Time: 1239.8s | Progress: 80.1 MB
+
+==================================================
+🧩 CHUNK 3: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.2644
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.2741 | Grad: 2.19 | Energy: 99.1 | Speed: 358ms (8583 tok/s) | VRAM: 0.20/0.63GBBB
+   ✅ Chunk 4 完成 Summary:
+      Train: 1.2556 | Val: 1.2644 | Diff: +0.0088
+      Time: 1250.4s | Progress: 90.1 MB
+
+==================================================
+🧩 CHUNK 4: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.2053
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.2333 | Grad: 1.77 | Energy: 95.5 | Speed: 341ms (9008 tok/s) | VRAM: 0.20/0.63GBB
+   ✅ Chunk 5 完成 Summary:
+      Train: 1.2144 | Val: 1.2053 | Diff: -0.0090
+      Time: 1249.6s | Progress: 100.1 MB
+
+📜 [Thought Stream]:
+They wanted to go you cose friends with a llock. He saw a balought in the grasss and laughes. He was so readys yare and granded drank he fout; "
+Humhe, they face and ploud need a cup tiny the close. He
+
+==================================================
+🧩 CHUNK 5: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.1915
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.1432 | Grad: 1.79 | Energy: 91.4 | Speed: 304ms (10093 tok/s) | VRAM: 0.20/0.63GB
+   ✅ Chunk 6 完成 Summary:
+      Train: 1.1855 | Val: 1.1915 | Diff: +0.0060
+      Time: 1174.4s | Progress: 110.1 MB
+
+==================================================
+🧩 CHUNK 6: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.1717
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.1493 | Grad: 1.60 | Energy: 88.7 | Speed: 296ms (10369 tok/s) | VRAM: 0.20/0.63GB
+   ✅ Chunk 7 完成 Summary:
+      Train: 1.1684 | Val: 1.1717 | Diff: +0.0033
+      Time: 1073.7s | Progress: 120.1 MB
+
+==================================================
+🧩 CHUNK 7: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.1229
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.1711 | Grad: 1.60 | Energy: 85.5 | Speed: 340ms (9034 tok/s) | VRAM: 0.20/0.63GBB
+   ✅ Chunk 8 完成 Summary:
+      Train: 1.1506 | Val: 1.1229 | Diff: -0.0277
+      Time: 1185.8s | Progress: 130.1 MB
+
+==================================================
+🧩 CHUNK 8: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.1225
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.0388 | Grad: 1.38 | Energy: 83.7 | Speed: 300ms (10224 tok/s) | VRAM: 0.20/0.63GB
+   ✅ Chunk 9 完成 Summary:
+      Train: 1.1211 | Val: 1.1225 | Diff: +0.0014
+      Time: 1243.5s | Progress: 140.1 MB
+
+==================================================
+🧩 CHUNK 9: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.1044
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.0964 | Grad: 1.55 | Energy: 80.7 | Speed: 360ms (8526 tok/s) | VRAM: 0.20/0.63GBB
+   ✅ Chunk 10 完成 Summary:
+      Train: 1.1198 | Val: 1.1044 | Diff: -0.0154
+      Time: 1215.0s | Progress: 150.1 MB
+
+📜 [Thought Stream]:
+They would said, "Maybe she left," she said nexck, but I'm a great stuffles in the rabbit revere."
+Lily smiled and said, "Ben, what no Tom. Daddy you love the askaching it was in the dog." He tried and
+
+==================================================
+🧩 CHUNK 10: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.1136
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.2135 | Grad: 1.71 | Energy: 78.5 | Speed: 291ms (10551 tok/s) | VRAM: 0.20/0.63GB
+   ✅ Chunk 11 完成 Summary:
+      Train: 1.0946 | Val: 1.1136 | Diff: +0.0191
+      Time: 1068.9s | Progress: 160.1 MB
+
+==================================================
+🧩 CHUNK 11: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.1007
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 0.9831 | Grad: 1.46 | Energy: 77.2 | Speed: 295ms (10406 tok/s) | VRAM: 0.20/0.63GB
+   ✅ Chunk 12 完成 Summary:
+      Train: 1.0872 | Val: 1.1007 | Diff: +0.0134
+      Time: 1068.3s | Progress: 170.1 MB
+
+==================================================
+🧩 CHUNK 12: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0937
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.0408 | Grad: 1.31 | Energy: 74.9 | Speed: 288ms (10683 tok/s) | VRAM: 0.20/0.63GB
+   ✅ Chunk 13 完成 Summary:
+      Train: 1.0780 | Val: 1.0937 | Diff: +0.0157
+      Time: 1064.5s | Progress: 180.1 MB
+
+==================================================
+🧩 CHUNK 13: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0870
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.1016 | Grad: 1.27 | Energy: 73.5 | Speed: 290ms (10584 tok/s) | VRAM: 0.20/0.63GB
+   ✅ Chunk 14 完成 Summary:
+      Train: 1.0654 | Val: 1.0870 | Diff: +0.0217
+      Time: 1067.4s | Progress: 190.1 MB
+
+==================================================
+🧩 CHUNK 14: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0713
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.0594 | Grad: 1.38 | Energy: 72.1 | Speed: 333ms (9230 tok/s) | VRAM: 0.20/0.63GBB
+   ✅ Chunk 15 完成 Summary:
+      Train: 1.0623 | Val: 1.0713 | Diff: +0.0090
+      Time: 1070.1s | Progress: 200.1 MB
+
+📜 [Thought Stream]:
+Tom. He asked them home in the both again. He said, "Lily, sad. He is not owl. But Let's so friend. He opened hard away. Lucy like the garden." And.
+She tears the pond. She said, "Bob wand. Can I see s
+
+==================================================
+🧩 CHUNK 15: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0672
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.0424 | Grad: 1.28 | Energy: 71.2 | Speed: 307ms (9996 tok/s) | VRAM: 0.20/0.63GBB
+   ✅ Chunk 16 完成 Summary:
+      Train: 1.0598 | Val: 1.0672 | Diff: +0.0074
+      Time: 1073.1s | Progress: 210.2 MB
+
+==================================================
+🧩 CHUNK 16: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0496
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.1581 | Grad: 1.46 | Energy: 69.9 | Speed: 315ms (9761 tok/s) | VRAM: 0.20/0.63GBB
+   ✅ Chunk 17 完成 Summary:
+      Train: 1.0503 | Val: 1.0496 | Diff: -0.0006
+      Time: 1060.1s | Progress: 220.2 MB
+
+==================================================
+🧩 CHUNK 17: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0532
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.0179 | Grad: 1.15 | Energy: 69.4 | Speed: 297ms (10333 tok/s) | VRAM: 0.20/0.63GB
+   ✅ Chunk 18 完成 Summary:
+      Train: 1.0482 | Val: 1.0532 | Diff: +0.0050
+      Time: 1062.2s | Progress: 230.2 MB
+
+==================================================
+🧩 CHUNK 18: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0622
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.0628 | Grad: 1.52 | Energy: 68.5 | Speed: 311ms (9882 tok/s) | VRAM: 0.20/0.63GBB
+   ✅ Chunk 19 完成 Summary:
+      Train: 1.0420 | Val: 1.0622 | Diff: +0.0201
+      Time: 1146.4s | Progress: 240.2 MB
+
+==================================================
+🧩 CHUNK 19: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0502
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.0129 | Grad: 1.37 | Energy: 67.5 | Speed: 366ms (8398 tok/s) | VRAM: 0.20/0.63GBB
+   ✅ Chunk 20 完成 Summary:
+      Train: 1.0429 | Val: 1.0502 | Diff: +0.0073
+      Time: 1250.6s | Progress: 250.2 MB
+
+📜 [Thought Stream]:
+They had played over to splash! They got out of the jar. Tom they are really chuncog the dealichy practiced that she shock his family, he's parint the feel better. The eld barked jam. It was best addde
+
+==================================================
+🧩 CHUNK 20: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0205
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.0068 | Grad: 1.25 | Energy: 66.9 | Speed: 315ms (9742 tok/s) | VRAM: 0.20/0.63GBB
+   ✅ Chunk 21 完成 Summary:
+      Train: 1.0410 | Val: 1.0205 | Diff: -0.0205
+      Time: 1156.5s | Progress: 260.2 MB
+
+==================================================
+🧩 CHUNK 21: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0432
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.0367 | Grad: 1.34 | Energy: 66.3 | Speed: 302ms (10169 tok/s) | VRAM: 0.20/0.63GB
+   ✅ Chunk 22 完成 Summary:
+      Train: 1.0162 | Val: 1.0432 | Diff: +0.0271
+      Time: 1085.4s | Progress: 270.2 MB
+
+==================================================
+🧩 CHUNK 22: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0492
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.0145 | Grad: 1.23 | Energy: 65.9 | Speed: 308ms (9980 tok/s) | VRAM: 0.20/0.63GBB
+   ✅ Chunk 23 完成 Summary:
+      Train: 1.0231 | Val: 1.0492 | Diff: +0.0261
+      Time: 1083.4s | Progress: 280.2 MB
+
+==================================================
+🧩 CHUNK 23: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0461
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.0424 | Grad: 1.18 | Energy: 65.8 | Speed: 281ms (10950 tok/s) | VRAM: 0.20/0.63GB
+   ✅ Chunk 24 完成 Summary:
+      Train: 1.0305 | Val: 1.0461 | Diff: +0.0156
+      Time: 1076.0s | Progress: 290.2 MB
+
+==================================================
+🧩 CHUNK 24: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0276
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.0404 | Grad: 1.41 | Energy: 65.5 | Speed: 285ms (10782 tok/s) | VRAM: 0.20/0.63GB
+   ✅ Chunk 25 完成 Summary:
+      Train: 1.0196 | Val: 1.0276 | Diff: +0.0080
+      Time: 1084.2s | Progress: 300.2 MB
+
+📜 [Thought Stream]:
+Timmy said, "Thank you, Mommy. I can have from calling the drees and yummy with your tail. The sound asked it if you - and a pretty slide to go for Sweepbarklesss. The End.
+And the floor walk in the la
+
+==================================================
+🧩 CHUNK 25: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0285
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.0073 | Grad: 1.11 | Energy: 65.6 | Speed: 301ms (10211 tok/s) | VRAM: 0.20/0.63GB
+   ✅ Chunk 26 完成 Summary:
+      Train: 1.0210 | Val: 1.0285 | Diff: +0.0075
+      Time: 1081.0s | Progress: 310.2 MB
+
+==================================================
+🧩 CHUNK 26: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0177
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 0.9883 | Grad: 1.22 | Energy: 65.3 | Speed: 289ms (10630 tok/s) | VRAM: 0.20/0.63GB
+   ✅ Chunk 27 完成 Summary:
+      Train: 1.0106 | Val: 1.0177 | Diff: +0.0071
+      Time: 1083.9s | Progress: 320.2 MB
+
+==================================================
+🧩 CHUNK 27: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0301
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.0079 | Grad: 1.26 | Energy: 64.9 | Speed: 292ms (10524 tok/s) | VRAM: 0.20/0.63GB
+   ✅ Chunk 28 完成 Summary:
+      Train: 1.0047 | Val: 1.0301 | Diff: +0.0253
+      Time: 1065.2s | Progress: 330.2 MB
+
+==================================================
+🧩 CHUNK 28: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0089
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.0275 | Grad: 1.13 | Energy: 64.9 | Speed: 299ms (10282 tok/s) | VRAM: 0.20/0.63GB
+   ✅ Chunk 29 完成 Summary:
+      Train: 1.0040 | Val: 1.0089 | Diff: +0.0050
+      Time: 1062.5s | Progress: 340.3 MB
+
+==================================================
+🧩 CHUNK 29: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0184
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 0.9607 | Grad: 1.14 | Energy: 65.1 | Speed: 283ms (10853 tok/s) | VRAM: 0.20/0.63GB
+   ✅ Chunk 30 完成 Summary:
+      Train: 1.0044 | Val: 1.0184 | Diff: +0.0141
+      Time: 1056.7s | Progress: 350.3 MB
+
+📜 [Thought Stream]:
+The noises started to play. They played together in their train. They are angry." The sad.
+<|endoftext|>
+
+Lily was a snacks and lady quite. Sally lay and weere trucks to the party. She was full and her
+
+==================================================
+🧩 CHUNK 30: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0197
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.0088 | Grad: 1.26 | Energy: 65.2 | Speed: 406ms (7571 tok/s) | VRAM: 0.20/0.63GBB
+   ✅ Chunk 31 完成 Summary:
+      Train: 1.0067 | Val: 1.0197 | Diff: +0.0130
+      Time: 1131.7s | Progress: 360.3 MB
+
+==================================================
+🧩 CHUNK 31: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0087
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 1.0477 | Grad: 1.30 | Energy: 64.4 | Speed: 340ms (9042 tok/s) | VRAM: 0.20/0.63GB
+   ✅ Chunk 32 完成 Summary:
+      Train: 1.0087 | Val: 1.0087 | Diff: -0.0000
+      Time: 1275.6s | Progress: 370.3 MB
+
+==================================================
+🧩 CHUNK 32: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0132
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 0.9910 | Grad: 1.18 | Energy: 65.6 | Speed: 306ms (10028 tok/s) | VRAM: 0.20/0.63GB
+   ✅ Chunk 33 完成 Summary:
+      Train: 0.9932 | Val: 1.0132 | Diff: +0.0199
+      Time: 1123.6s | Progress: 380.3 MB
+
+==================================================
+🧩 CHUNK 33: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 0.9951
+   🔥 训练当下 (Training)...
+      ⚡ Step 3400/3413 | Loss: 0.9904 | Grad: 1.28 | Energy: 65.1 | Speed: 347ms (8850 tok/s) | VRAM: 0.20/0.63GBB
+   ✅ Chunk 34 完成 Summary:
+      Train: 1.0011 | Val: 0.9951 | Diff: -0.0060
+      Time: 1186.7s | Progress: 390.3 MB
+
+==================================================
+🧩 CHUNK 34: 开始加载未来数据...
+   🔮 验证未来 (Validation)...
+   📊 验证结果: Val Loss = 1.0117
+   🔥 训练当下 (Training)...
+      ⚡ Step 2650/3413 | Loss: 1.0171 | Grad: 1.14 | Energy: 64.4 | Speed: 302ms (10174 tok/s) | VRAM: 0.20/0.63GB
+🛑 监测到中断，紧急保存...
