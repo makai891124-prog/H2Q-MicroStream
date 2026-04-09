@@ -163,7 +163,7 @@ def _compute_svd_entropy(model: H2Q_Evolution_Engine) -> float:
                 # Effective projection: [dim, dim]
                 w_eff  = w_up @ w_down            # [dim, rank] × [rank, dim]
                 # SVD — we only need singular values
-                sv = torch.linalg.svdvals(w_eff)  # [min(dim, rank)] = [rank]
+                sv = torch.linalg.svdvals(w_eff)  # [dim] — singular values of [dim, dim] effective matrix
                 energy = sv.pow(2)
                 total  = energy.sum()
                 if total > 0:
