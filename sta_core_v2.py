@@ -229,6 +229,9 @@ class Stereographic_Attention_Layer_V2(nn.Module):
                              Precomputed as cos_lambda = cos(Lambda).
         rank:                bottleneck rank for Rank8_Projection (default 8)
         max_seq_len:         maximum sequence length
+        causal:              if True, apply an upper-triangular causal mask to
+                             scores before shockwave truncation, enforcing the
+                             time-arrow constraint (token i cannot attend to j>i).
     """
 
     def __init__(
@@ -237,10 +240,12 @@ class Stereographic_Attention_Layer_V2(nn.Module):
         shockwave_threshold: float = math.pi / 2,
         rank: int = 8,
         max_seq_len: int = 8192,
+        causal: bool = False,
     ):
         super().__init__()
         self.hidden_dim = hidden_dim
         self.sphere_dim = hidden_dim + 1
+        self.causal     = causal
 
         # Opt 1: precompute cos(Lambda) -- no arccos in forward pass
         self.cos_lambda = math.cos(shockwave_threshold)
@@ -289,6 +294,15 @@ class Stereographic_Attention_Layer_V2(nn.Module):
         # <- 球极残差调制: amplitude-modulate scores by the conformal distortion
         conformal = omega_q * omega_k.transpose(1, 2)     # [B, L, L]  (broadcast)
         scores    = raw_inner * conformal                  # <- 球极残差调制 (this line)
+
+        # ── Causal mask (time-arrow enforcement) ─────────────────────────────
+        # Applied to scores (post-conformal) so the conformal factor cannot
+        # leak information from future tokens across the causal boundary.
+        if self.causal:
+            causal_mask = torch.triu(
+                torch.ones(L, L, device=x.device, dtype=torch.bool), diagonal=1
+            )                                                          # True  => future token => zero
+            scores = scores.masked_fill(causal_mask, float("-inf"))
 
         # ── Algebraic Shockwave Truncation: raw_inner < cos(Lambda)  (Opt 1)
         # Mathematically: arccos(inner) > Lambda  <=>  inner < cos(Lambda)
