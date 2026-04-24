@@ -1,0 +1,16 @@
+{
+  "name": "方案 C - 无 DeepSeek 督导",
+  "description": "禁用外部督导注入：supervise_every 从 10 改为 0",
+  "modifications": [
+    {
+      "file": "agi_joint_trainer.py",
+      "line": 151,
+      "old": "    \"supervise_every\": 10,",
+      "new": "    \"supervise_every\": 0,  # 禁用 DeepSeek 督导"
+    }
+  ],
+  "expected_tps": 20716.612376237623,
+  "expected_loss": 1.8172644554455446,
+  "risk": "⭐⭐ 中（失去外部蒸馏，loss 可能上升）",
+  "execution": "\n# Step 1: 修改 agi_joint_trainer.py CONFIG，第 151 行\n#   old: \"supervise_every\": 10,\n#   new: \"supervise_every\": 0,\npython agi_joint_trainer.py  # 运行 50 chunk\n\n# Step 2: 评估完成后记录指标\n#   计算：mean(tokens_per_sec), mean(val_loss)\n"
+}

@@ -1,0 +1,91 @@
+{
+  "runs": {
+    "ctrl24h": {
+      "segment_count": 1,
+      "segments": [
+        {
+          "seg": 2,
+          "file": "acceptance_ctrl24h_seg2.json",
+          "verdict": "REJECT",
+          "gate_pass": {
+            "A": false,
+            "B": false,
+            "C": false,
+            "D": false
+          },
+          "ema_last": 2.53333049,
+          "sparsity_peak": 0.71558213,
+          "support_rate": 0.0
+        }
+      ],
+      "gate_pass_counts": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0
+      },
+      "final_verdict": "REJECT"
+    },
+    "main24h": {
+      "segment_count": 1,
+      "segments": [
+        {
+          "seg": 1,
+          "file": "acceptance_main24h_seg1.json",
+          "verdict": "REJECT",
+          "gate_pass": {
+            "A": false,
+            "B": false,
+            "C": false,
+            "D": false
+          },
+          "ema_last": 2.53367068,
+          "sparsity_peak": 0.76775384,
+          "support_rate": 0.0
+        }
+      ],
+      "gate_pass_counts": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0
+      },
+      "final_verdict": "REJECT"
+    },
+    "pilot_start": {
+      "segment_count": 1,
+      "segments": [
+        {
+          "seg": 1,
+          "file": "acceptance_pilot_start_seg1_v2.json",
+          "verdict": "REJECT",
+          "gate_pass": {
+            "A": false,
+            "B": false,
+            "C": false,
+            "D": false
+          },
+          "ema_last": 2.84460124,
+          "sparsity_peak": 0.02489495,
+          "support_rate": 0.0
+        }
+      ],
+      "gate_pass_counts": {
+        "A": 0,
+        "B": 0,
+        "C": 0,
+        "D": 0
+      },
+      "final_verdict": "REJECT"
+    }
+  },
+  "overall_verdict": "REJECT",
+  "main_vs_ctrl": {
+    "status": "OK",
+    "final_conclusion": "NO_SIGNIFICANT_DIFFERENCE",
+    "main_final_verdict": "REJECT",
+    "ctrl_final_verdict": "REJECT",
+    "main_accept_rate": 0.0,
+    "ctrl_accept_rate": 0.0
+  }
+}

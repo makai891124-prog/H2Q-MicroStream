@@ -1,0 +1,127 @@
+{
+  "generated_at": "2026-04-20T11:42:58.354834+00:00",
+  "segment_analysis": {
+    "main24h_seg1": {
+      "name": "main24h_seg1",
+      "T_max": 30000,
+      "loss_start": 2.86451,
+      "loss_end": 2.53367,
+      "loss_best": 2.52123,
+      "loss_delta": 0.33084,
+      "loss_rel_pct": 11.55,
+      "tail_cv_loss": 0.00766,
+      "sparsity_peak": 0.76775,
+      "sparsity_peak_T": 12000,
+      "sparsity_end": 0.51242,
+      "phase_triggers": 14,
+      "svd_start": 2.89522,
+      "svd_end": 2.63721,
+      "svd_slope_per1000": -0.0089,
+      "speed_start": 31.801,
+      "speed_end": 40.936,
+      "speed_delta": 9.135,
+      "logfit_R2": 0.9786,
+      "est_steps_to_baseline": 66103658,
+      "gate_A_loss_ok": false,
+      "gate_A_vram_ok": true,
+      "gate_A_tps_ok": true,
+      "gap_vs_baseline": 0.72853
+    },
+    "ctrl24h_seg2": {
+      "name": "ctrl24h_seg2",
+      "T_max": 30000,
+      "loss_start": 2.85273,
+      "loss_end": 2.53333,
+      "loss_best": 2.51728,
+      "loss_delta": 0.3194,
+      "loss_rel_pct": 11.2,
+      "tail_cv_loss": 0.00698,
+      "sparsity_peak": 0.71558,
+      "sparsity_peak_T": 10000,
+      "sparsity_end": 0.53344,
+      "phase_triggers": 12,
+      "svd_start": 2.91084,
+      "svd_end": 2.64217,
+      "svd_slope_per1000": -0.00926,
+      "speed_start": 41.46,
+      "speed_end": 33.783,
+      "speed_delta": -7.677,
+      "logfit_R2": 0.9734,
+      "est_steps_to_baseline": 66782445,
+      "gate_A_loss_ok": false,
+      "gate_A_vram_ok": true,
+      "gate_A_tps_ok": true,
+      "gap_vs_baseline": 0.72819
+    }
+  },
+  "comparison_main_vs_ctrl": {
+    "main_loss_rate_per1k": 0.01103,
+    "ctrl_loss_rate_per1k": 0.01065,
+    "delta_final_loss": -0.00034,
+    "delta_sparsity_end": 0.02102,
+    "delta_svd_end": 0.00496,
+    "delta_speed_end": -7.153,
+    "cohen_d": 0.2035,
+    "conclusion": "SLIGHT_DIFF"
+  },
+  "resume_bug": {
+    "empty_segments": [
+      "main24h_seg2",
+      "main24h_seg3",
+      "ctrl24h_seg1",
+      "ctrl24h_seg3"
+    ],
+    "cause": "daemon.run() 在 while True 第一次检查时立即满足 self.step >= max_steps，因为 --resume 从 checkpoint 恢复了 T=30000。导致零遥测写入。",
+    "affected_segments_count": 4,
+    "valid_segments_count": 2,
+    "fix": "加载 checkpoint 后将 self.step 重置为 0（或改用 --max-steps 表示'额外步数'而非绝对步数上限）。"
+  },
+  "gate_failure_diagnosis": {
+    "main24h_seg1": {
+      "Gate_A_fail_reason": "从随机初始化 loss=2.8645 出发，对数拟合 R²=0.9786 预测需要 ~66,103,658 步才能触及基线阈值 1.8051，而本段仅训练 30000 步（缺口 +0.7285 nats）。",
+      "Gate_B_fail_reason": "稀疏度 CV 超标：拓扑进化导致稀疏度大幅振荡（0%→75%），这是预期行为但 CV 阈值(0.2) 过严。",
+      "Gate_C_fail_reason": "phase_trigger_count=14 > max=3，进化机制过于活跃（本身是积极信号）。",
+      "Gate_D_fail_reason": "autopilot_hypotheses.jsonl 无记录，无法评估假说支持率（需要 world_model_autopilot.py 并发运行）。",
+      "recommendation": "重新校准 Gate A 阈值：以从随机初始化起训练 N 步后的预期 loss 区间为基准，而非历史预训练模型的终态 loss。"
+    },
+    "ctrl24h_seg2": {
+      "Gate_A_fail_reason": "从随机初始化 loss=2.8527 出发，对数拟合 R²=0.9734 预测需要 ~66,782,445 步才能触及基线阈值 1.8051，而本段仅训练 30000 步（缺口 +0.7282 nats）。",
+      "Gate_B_fail_reason": "稀疏度 CV 超标：拓扑进化导致稀疏度大幅振荡（0%→75%），这是预期行为但 CV 阈值(0.2) 过严。",
+      "Gate_C_fail_reason": "phase_trigger_count=12 > max=3，进化机制过于活跃（本身是积极信号）。",
+      "Gate_D_fail_reason": "autopilot_hypotheses.jsonl 无记录，无法评估假说支持率（需要 world_model_autopilot.py 并发运行）。",
+      "recommendation": "重新校准 Gate A 阈值：以从随机初始化起训练 N 步后的预期 loss 区间为基准，而非历史预训练模型的终态 loss。"
+    }
+  },
+  "evolution_health": {
+    "main24h_seg1": {
+      "score": 100,
+      "label": "EXCELLENT",
+      "details": [
+        "✓ loss降幅11.6%>8%  (+25)",
+        "✓ sparsity峰值77%>50%  (+20)",
+        "✓ SVD斜率-0.0089<-0.005  (+20)",
+        "✓ phase_triggers=14≥2  (+15)",
+        "✓ tail_cv_loss=0.0077<0.05  (+10)",
+        "✓ VRAM<250MB (合规)  (+10)"
+      ]
+    },
+    "ctrl24h_seg2": {
+      "score": 100,
+      "label": "EXCELLENT",
+      "details": [
+        "✓ loss降幅11.2%>8%  (+25)",
+        "✓ sparsity峰值72%>50%  (+20)",
+        "✓ SVD斜率-0.0093<-0.005  (+20)",
+        "✓ phase_triggers=12≥2  (+15)",
+        "✓ tail_cv_loss=0.0070<0.05  (+10)",
+        "✓ VRAM<250MB (合规)  (+10)"
+      ]
+    }
+  },
+  "overall_validity": {
+    "training_runs_valid": true,
+    "acceptance_gates_valid": false,
+    "gate_calibration_issue": true,
+    "root_cause_summary": "接受闸门基线来自已收敛旧模型（val_loss≈1.79），本实验从随机初始化出发，30k步后 loss≈2.53，预计需要 180k-400k 步才能触及基线水平。训练本身有效（损失持续下降、进化拓扑正常展开），但门控标准与实验目标不匹配。"
+  }
+}

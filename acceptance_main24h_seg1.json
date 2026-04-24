@@ -1,0 +1,41 @@
+{
+  "utc": "2026-04-20T07:49:54.794404+00:00",
+  "verdict": "REJECT",
+  "telemetry_path": "evolution_telemetry_main24h_seg1.csv",
+  "baseline_path": "baseline_snapshot.json",
+  "gates": {
+    "A": {
+      "pass": false,
+      "ema_last": 2.53367068,
+      "val_loss_max": 1.8051371,
+      "vram_last_gb": 0.0177888671875,
+      "vram_max_gb": 0.25,
+      "tokens_per_sec": 41918.611456,
+      "tokens_per_sec_min": 16213.00099009901,
+      "tps_available": true
+    },
+    "B": {
+      "pass": false,
+      "max_loss_cv": 0.02918119825141057,
+      "max_sparsity_cv": 0.4757692257210528,
+      "loss_cv_threshold": 0.1,
+      "sparsity_cv_threshold": 0.2,
+      "window": 20
+    },
+    "C": {
+      "pass": false,
+      "sparsity_peak": 0.76775384,
+      "sparsity_target": 0.5,
+      "svd_last": 2.63720635,
+      "svd_min": 1.6,
+      "phase_trigger_count": 4,
+      "phase_trigger_max": 3
+    },
+    "D": {
+      "pass": false,
+      "checked": 0,
+      "supported": 0,
+      "support_rate": 0.0
+    }
+  }
+}

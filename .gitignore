@@ -1,0 +1,43 @@
+.secrets/
+H2Q-Single/secret_config.py
+*.key
+*.secret
+*.token
+
+# Python environments and caches
+.venv/
+venv/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Native build outputs
+*.exe
+*.dll
+*.obj
+*.o
+*.a
+*.lib
+
+# Model weights and large binary artifacts
+*.pt
+*.bin
+
+# Logs and runtime traces
+*.log
+
+# Generated telemetry and benchmark outputs
+telemetry_*.csv
+evolution_telemetry*.csv
+agi_joint_telemetry.csv
+final_test_report.json
+autopilot_state.json
+
+# Generated corpus assets
+data/open_corpus/arxiv_pdfs/
+data/open_corpus/open_corpus.bin
+
+# Keep source manifests and reports, but ignore local machine noise
+.DS_Store
+Thumbs.db

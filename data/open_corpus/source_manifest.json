@@ -1,0 +1,98 @@
+{
+  "generated_at_utc": "2026-04-10T06:28:27.418148+00:00",
+  "items": [
+    {
+      "source_type": "arxiv",
+      "title": "Act Wisely: Cultivating Meta-Cognitive Tool Use in Agentic Multimodal Models",
+      "url": "http://arxiv.org/abs/2604.08545v1",
+      "content_sha256": "9df0ea31a8032152ec303bd1a80cb34b9c3ed425266e41e1571536c8cfc196a2",
+      "content_bytes": 1907
+    },
+    {
+      "source_type": "arxiv",
+      "title": "SIM1: Physics-Aligned Simulator as Zero-Shot Data Scaler in Deformable Worlds",
+      "url": "http://arxiv.org/abs/2604.08544v1",
+      "content_sha256": "125f07f1453ff654e4d500449f2630d6e83857ab3a176756ebc100a8eeddc542",
+      "content_bytes": 1591
+    },
+    {
+      "source_type": "arxiv",
+      "title": "Seeing but Not Thinking: Routing Distraction in Multimodal Mixture-of-Experts",
+      "url": "http://arxiv.org/abs/2604.08541v1",
+      "content_sha256": "034da31d4fb7a92627c5ba93a467a8bd66e886f26602ae9a3bb376ff4be1d24e",
+      "content_bytes": 1554
+    },
+    {
+      "source_type": "arxiv",
+      "title": "AVGen-Bench: A Task-Driven Benchmark for Multi-Granular Evaluation of Text-to-Audio-Video Generation",
+      "url": "http://arxiv.org/abs/2604.08540v1",
+      "content_sha256": "4385d7584a66ac65e489165bee4bce0fc729187de917d68d6cd49b952a35d996",
+      "content_bytes": 1237
+    },
+    {
+      "source_type": "arxiv",
+      "title": "OpenVLThinkerV2: A Generalist Multimodal Reasoning Model for Multi-domain Visual Tasks",
+      "url": "http://arxiv.org/abs/2604.08539v1",
+      "content_sha256": "164632952fe5dd25430592d8148ec54b6d38cc6ea54d730671a0e3eef09d04ad",
+      "content_bytes": 1871
+    },
+    {
+      "source_type": "arxiv",
+      "title": "RewardFlow: Generate Images by Optimizing What You Reward",
+      "url": "http://arxiv.org/abs/2604.08536v1",
+      "content_sha256": "ed9d4f0c53ba6a11de26adedfccdf2f8b6c5133e9277bb778fa4097e723904bb",
+      "content_bytes": 1016
+    },
+    {
+      "source_type": "arxiv_pdf",
+      "title": "Act Wisely: Cultivating Meta-Cognitive Tool Use in Agentic Multimodal Models",
+      "url": "https://arxiv.org/pdf/2604.08545v1.pdf",
+      "content_sha256": "be5cd91407995acfcff3b22e516c102c996e3fe9040c2aca997e2f14d5f4f4ae",
+      "content_bytes": 3323
+    },
+    {
+      "source_type": "huggingface",
+      "title": "huggingface/documentation-images",
+      "url": "https://huggingface.co/datasets/huggingface/documentation-images",
+      "content_sha256": "79acf419695c0ee75a63b662fa6b9337e450defa92669494310670676b46a2a2",
+      "content_bytes": 308
+    },
+    {
+      "source_type": "github",
+      "title": "karpathy/nanoGPT",
+      "url": "https://github.com/karpathy/nanoGPT",
+      "content_sha256": "294423c9f3d351c7495ee50f8e240af94ea865b8a799ee8c9f2268e1971abf24",
+      "content_bytes": 14046
+    },
+    {
+      "source_type": "github",
+      "title": "huggingface/transformers",
+      "url": "https://github.com/huggingface/transformers",
+      "content_sha256": "fbef8487814028569d76f57eabcf6516cd6f48ef7d210602087de7b322ed006b",
+      "content_bytes": 18448
+    },
+    {
+      "source_type": "github",
+      "title": "pytorch/pytorch",
+      "url": "https://github.com/pytorch/pytorch",
+      "content_sha256": "814133fd63135e087cc974ef998ef8f8fba74840c20c0c4e86f720be2cdc31fc",
+      "content_bytes": 29643
+    },
+    {
+      "source_type": "github",
+      "title": "openai/gym",
+      "url": "https://github.com/openai/gym",
+      "content_sha256": "e5c0f5d759e0beea413fa7a8c4df7278221eb1430963e0ef0953bbbbaef0acfb",
+      "content_bytes": 5037
+    },
+    {
+      "source_type": "github",
+      "title": "facebookresearch/esm",
+      "url": "https://github.com/facebookresearch/esm",
+      "content_sha256": "1a5212e7eb509edd32cf2f27fedb6bbc8e088ef9de2bca7e47fb23d19fbd4c7d",
+      "content_bytes": 46508
+    }
+  ],
+  "item_count": 13,
+  "text_bytes": 4199454
+}

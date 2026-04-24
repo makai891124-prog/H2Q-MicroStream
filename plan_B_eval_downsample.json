@@ -1,0 +1,16 @@
+{
+  "name": "方案 B - 评估下采样",
+  "description": "减少验证计算：eval_limit 从 1000 × seq_len 改为 100 × seq_len",
+  "modifications": [
+    {
+      "file": "agi_joint_trainer.py",
+      "line": 805,
+      "old": "            eval_limit = min(future_data.size(1), 1000 * seq_len)",
+      "new": "            eval_limit = min(future_data.size(1), 100 * seq_len)  # 减 10 倍验证量"
+    }
+  ],
+  "expected_tps": 25220.223762376238,
+  "expected_loss": 1.7872644554455446,
+  "risk": "⭐ 低（评估不反传，只影响监测）",
+  "execution": "\n# Step 1: 修改 agi_joint_trainer.py 第 805 行\n#   old: eval_limit = min(future_data.size(1), 1000 * seq_len)\n#   new: eval_limit = min(future_data.size(1), 100 * seq_len)\npython agi_joint_trainer.py  # 运行 50 chunk\n\n# Step 2: 评估完成后记录 telemetry 最后 50 行\n#   计算：mean(tokens_per_sec), mean(val_loss)\n"
+}

@@ -81,6 +81,18 @@ Chunk 18 | Train: 1.0420 | Val: 1.0622 | Energy: 68.5 | Speed: 311ms
 
 ------
 
+## 🔬 Prime Sieve Experiments / 素数筛实验
+
+Prime-sieve related C++ experiments are now organized under [experiments/prime_sieve/README.md](experiments/prime_sieve/README.md).
+
+素数筛相关的 C++ 实验现已整理到 [experiments/prime_sieve/README.md](experiments/prime_sieve/README.md)，包含：
+
+*   `6` 轮位图筛 MVP
+*   多算法对照基准
+*   动态轮基扩展实验报告
+
+这部分内容独立于主训练流程，适合后续单独复现、扩展和撰写论文附录。
+
 
 
 ## 🔮 Vision / 愿景

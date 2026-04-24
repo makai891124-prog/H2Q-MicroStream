@@ -12,9 +12,9 @@ namespace primorial_mvp {
 class WheelSieve6 {
 public:
     explicit WheelSieve6(std::uint32_t limit)
-                : limit_(limit),
-                    candidate_count_(compute_candidate_count(limit)),
-                    candidate_bits_(words_for_bits(candidate_count_), 0ULL) {}
+        : limit_(limit),
+          candidate_count_(compute_candidate_count(limit)),
+          candidate_bits_(words_for_bits(candidate_count_), 0ULL) {}
 
     void run() {
         if (limit_ < 5) {

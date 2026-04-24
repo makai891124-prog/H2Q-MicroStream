@@ -1,0 +1,16 @@
+## Cycle 1
+- UTC: 2026-04-10T06:29:04.309269+00:00
+- Steps: 1000
+- EMA min: 2.529981
+- EMA last: 2.957378
+- Sparsity max: 0.5501
+- Sparsity mean(last10): 0.2124
+- SVD entropy(last): 2.8967
+- VRAM MB(last): 17.4658
+- Phase-like trigger observed: True
+- Next policy: {"lr": 0.0003, "target_sparsity": 0.5, "phase_trigger_like": true}
+- Hypothesis checks: 0
+- Hypothesis proposed: 3
+  - [proposed] H-EMA-1: If high sparsity appears, next cycle EMA minimum should improve by at least 0.05
+  - [proposed] H-SP-1: If SVD entropy stays healthy, next cycle should reach sparsity > 0.5 at least once
+  - [proposed] H-VRAM-1: VRAM allocation should remain approximately constant in next cycle

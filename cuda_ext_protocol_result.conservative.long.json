@@ -1,0 +1,728 @@
+{
+  "diagnosis": {
+    "torch_version": "2.5.1+cu121",
+    "torch_cuda_version": "12.1",
+    "cuda_available": true,
+    "device": "NVIDIA GeForce RTX 4070 Ti SUPER",
+    "CUDA_HOME": "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v12.1",
+    "nvcc": "C:\\Program Files\\NVIDIA GPU Computing Toolkit\\CUDA\\v12.1\\bin\\nvcc.EXE",
+    "nvcc_version": "Build cuda_12.1.r12.1/compiler.32415258_0",
+    "cl": "C:\\Program Files (x86)\\Microsoft Visual Studio\\2022\\BuildTools\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x64\\cl.EXE",
+    "cl_version": "用法: cl [ 选项... ] 文件名... [ /link 链接选项... ]",
+    "ninja": "C:\\Users\\makai\\AppData\\Local\\Programs\\Python\\Python310\\Scripts\\ninja.EXE",
+    "missing": [],
+    "can_compile": true
+  },
+  "config": {
+    "seeds": [
+      42,
+      1337,
+      2024
+    ],
+    "steps": [
+      40,
+      120,
+      240
+    ],
+    "batch_size": 4,
+    "seq_len": 128,
+    "dim": 128,
+    "layers": 4,
+    "lr": 0.0003
+  },
+  "cuda_ext_compiled": true,
+  "raw_runs": [
+    {
+      "variant": "sta_v2",
+      "seed": 42,
+      "steps": 40,
+      "avg_loss": 4.738642519712448,
+      "last_loss": 3.857694387435913,
+      "tps": 18353.63913776125,
+      "peak_vram_mb": 39.033203125,
+      "step_ms_mean": 27.695840000160388,
+      "step_ms_p50": 20.933599997079,
+      "step_ms_p90": 27.02619999763556,
+      "step_ms_p99": 242.15259999618866,
+      "topology_sparsity": 0.0,
+      "binary_backend_effective": "n/a",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "packbits",
+      "seed": 42,
+      "steps": 40,
+      "avg_loss": 4.512960511445999,
+      "last_loss": 3.6777729988098145,
+      "tps": 36537.09674927504,
+      "peak_vram_mb": 32.88232421875,
+      "step_ms_mean": 13.829294998868136,
+      "step_ms_p50": 12.964399997144938,
+      "step_ms_p90": 16.892200001166202,
+      "step_ms_p99": 29.01919999567326,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "packbits",
+      "cuda_ext_enabled": true
+    },
+    {
+      "variant": "cuda_ext",
+      "seed": 42,
+      "steps": 40,
+      "avg_loss": 4.512960511445999,
+      "last_loss": 3.6777729988098145,
+      "tps": 36241.68746117409,
+      "peak_vram_mb": 32.88232421875,
+      "step_ms_mean": 13.94330750044901,
+      "step_ms_p50": 13.594099989859387,
+      "step_ms_p90": 15.985899997758679,
+      "step_ms_p99": 18.72150000417605,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "cuda_ext",
+      "cuda_ext_enabled": true
+    },
+    {
+      "variant": "sta_v2",
+      "seed": 1337,
+      "steps": 40,
+      "avg_loss": 4.759722673892975,
+      "last_loss": 3.889779567718506,
+      "tps": 21651.181702053127,
+      "peak_vram_mb": 39.033203125,
+      "step_ms_mean": 23.44128750046366,
+      "step_ms_p50": 23.314700010814704,
+      "step_ms_p90": 27.34240000427235,
+      "step_ms_p99": 31.718600002932362,
+      "topology_sparsity": 0.00035858154296875,
+      "binary_backend_effective": "n/a",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "packbits",
+      "seed": 1337,
+      "steps": 40,
+      "avg_loss": 4.555184817314148,
+      "last_loss": 3.7298483848571777,
+      "tps": 36478.79847964939,
+      "peak_vram_mb": 32.88232421875,
+      "step_ms_mean": 13.856262499757577,
+      "step_ms_p50": 13.559700004407205,
+      "step_ms_p90": 16.311899991706014,
+      "step_ms_p99": 18.740499988780357,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "packbits",
+      "cuda_ext_enabled": true
+    },
+    {
+      "variant": "cuda_ext",
+      "seed": 1337,
+      "steps": 40,
+      "avg_loss": 4.555184817314148,
+      "last_loss": 3.7298483848571777,
+      "tps": 36992.02792887077,
+      "peak_vram_mb": 32.88232421875,
+      "step_ms_mean": 13.6613574999501,
+      "step_ms_p50": 13.04480001272168,
+      "step_ms_p90": 16.348400007700548,
+      "step_ms_p99": 18.42239999677986,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "cuda_ext",
+      "cuda_ext_enabled": true
+    },
+    {
+      "variant": "sta_v2",
+      "seed": 2024,
+      "steps": 40,
+      "avg_loss": 4.604809373617172,
+      "last_loss": 3.785222053527832,
+      "tps": 22634.166008239656,
+      "peak_vram_mb": 39.033203125,
+      "step_ms_mean": 22.41200999924331,
+      "step_ms_p50": 22.802200008300133,
+      "step_ms_p90": 25.099499995121732,
+      "step_ms_p99": 30.177599997841753,
+      "topology_sparsity": 0.0,
+      "binary_backend_effective": "n/a",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "packbits",
+      "seed": 2024,
+      "steps": 40,
+      "avg_loss": 4.483997195959091,
+      "last_loss": 3.6954896450042725,
+      "tps": 43124.57780903164,
+      "peak_vram_mb": 32.88232421875,
+      "step_ms_mean": 11.698092498772894,
+      "step_ms_p50": 11.535199999343604,
+      "step_ms_p90": 12.7749999955995,
+      "step_ms_p99": 15.733299995190464,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "packbits",
+      "cuda_ext_enabled": true
+    },
+    {
+      "variant": "cuda_ext",
+      "seed": 2024,
+      "steps": 40,
+      "avg_loss": 4.483997195959091,
+      "last_loss": 3.6954896450042725,
+      "tps": 44749.259933419824,
+      "peak_vram_mb": 32.88232421875,
+      "step_ms_mean": 11.265174999789451,
+      "step_ms_p50": 11.14979998965282,
+      "step_ms_p90": 11.881500002346002,
+      "step_ms_p99": 14.444000000366941,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "cuda_ext",
+      "cuda_ext_enabled": true
+    },
+    {
+      "variant": "sta_v2",
+      "seed": 42,
+      "steps": 120,
+      "avg_loss": 3.9715702335039773,
+      "last_loss": 3.3088538646698,
+      "tps": 26387.298020692317,
+      "peak_vram_mb": 39.033203125,
+      "step_ms_mean": 19.209543333757512,
+      "step_ms_p50": 18.887099999119528,
+      "step_ms_p90": 20.23340000596363,
+      "step_ms_p99": 25.11390000290703,
+      "topology_sparsity": 0.0,
+      "binary_backend_effective": "n/a",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "packbits",
+      "seed": 42,
+      "steps": 120,
+      "avg_loss": 3.8780627230803173,
+      "last_loss": 3.346064329147339,
+      "tps": 41717.94554066673,
+      "peak_vram_mb": 32.88232421875,
+      "step_ms_mean": 12.080139165967315,
+      "step_ms_p50": 11.777299994719215,
+      "step_ms_p90": 13.498000000254251,
+      "step_ms_p99": 16.10179999261163,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "packbits",
+      "cuda_ext_enabled": true
+    },
+    {
+      "variant": "cuda_ext",
+      "seed": 42,
+      "steps": 120,
+      "avg_loss": 3.8780627230803173,
+      "last_loss": 3.346064329147339,
+      "tps": 40319.106301678265,
+      "peak_vram_mb": 32.88232421875,
+      "step_ms_mean": 12.495772499702676,
+      "step_ms_p50": 12.018399997032247,
+      "step_ms_p90": 14.058700005989522,
+      "step_ms_p99": 18.645699994522147,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "cuda_ext",
+      "cuda_ext_enabled": true
+    },
+    {
+      "variant": "sta_v2",
+      "seed": 1337,
+      "steps": 120,
+      "avg_loss": 3.9974003156026203,
+      "last_loss": 3.4327821731567383,
+      "tps": 25638.68557173806,
+      "peak_vram_mb": 39.033203125,
+      "step_ms_mean": 19.77123916670583,
+      "step_ms_p50": 19.35770000272896,
+      "step_ms_p90": 21.695800009183586,
+      "step_ms_p99": 25.15099999436643,
+      "topology_sparsity": 0.08376312255859375,
+      "binary_backend_effective": "n/a",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "packbits",
+      "seed": 1337,
+      "steps": 120,
+      "avg_loss": 3.9202584783236185,
+      "last_loss": 3.4878578186035156,
+      "tps": 41241.26266191208,
+      "peak_vram_mb": 32.88232421875,
+      "step_ms_mean": 12.225517500337446,
+      "step_ms_p50": 11.931000000913627,
+      "step_ms_p90": 13.90479999827221,
+      "step_ms_p99": 16.593500011367723,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "packbits",
+      "cuda_ext_enabled": true
+    },
+    {
+      "variant": "cuda_ext",
+      "seed": 1337,
+      "steps": 120,
+      "avg_loss": 3.9202584783236185,
+      "last_loss": 3.4878578186035156,
+      "tps": 40190.11546854082,
+      "peak_vram_mb": 32.88232421875,
+      "step_ms_mean": 12.54612750041512,
+      "step_ms_p50": 12.009700003545731,
+      "step_ms_p90": 14.275399997131899,
+      "step_ms_p99": 20.789300004253164,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "cuda_ext",
+      "cuda_ext_enabled": true
+    },
+    {
+      "variant": "sta_v2",
+      "seed": 2024,
+      "steps": 120,
+      "avg_loss": 3.9510338226954143,
+      "last_loss": 3.6779463291168213,
+      "tps": 23667.373554921953,
+      "peak_vram_mb": 39.033203125,
+      "step_ms_mean": 21.314058334003978,
+      "step_ms_p50": 20.346000004792586,
+      "step_ms_p90": 24.23090000229422,
+      "step_ms_p99": 30.572700008633547,
+      "topology_sparsity": 0.17612075805664062,
+      "binary_backend_effective": "n/a",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "packbits",
+      "seed": 2024,
+      "steps": 120,
+      "avg_loss": 3.9057819028695424,
+      "last_loss": 3.6908726692199707,
+      "tps": 35418.056429406155,
+      "peak_vram_mb": 32.88232421875,
+      "step_ms_mean": 14.096439167648592,
+      "step_ms_p50": 13.612599999760278,
+      "step_ms_p90": 16.464800006360747,
+      "step_ms_p99": 18.531599998823367,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "packbits",
+      "cuda_ext_enabled": true
+    },
+    {
+      "variant": "cuda_ext",
+      "seed": 2024,
+      "steps": 120,
+      "avg_loss": 3.9057819028695424,
+      "last_loss": 3.6908726692199707,
+      "tps": 35147.70588869756,
+      "peak_vram_mb": 32.88232421875,
+      "step_ms_mean": 14.216265832874342,
+      "step_ms_p50": 13.52200000837911,
+      "step_ms_p90": 16.876699999556877,
+      "step_ms_p99": 19.115699993562885,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "cuda_ext",
+      "cuda_ext_enabled": true
+    },
+    {
+      "variant": "sta_v2",
+      "seed": 42,
+      "steps": 240,
+      "avg_loss": 3.629411392410596,
+      "last_loss": 3.094576597213745,
+      "tps": 23611.340729879546,
+      "peak_vram_mb": 39.033203125,
+      "step_ms_mean": 21.327479583063297,
+      "step_ms_p50": 20.559199998388067,
+      "step_ms_p90": 24.67389999947045,
+      "step_ms_p99": 31.545199992251582,
+      "topology_sparsity": 0.009033203125,
+      "binary_backend_effective": "n/a",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "packbits",
+      "seed": 42,
+      "steps": 240,
+      "avg_loss": 3.675379173954328,
+      "last_loss": 3.394545793533325,
+      "tps": 43008.71286936768,
+      "peak_vram_mb": 32.88232421875,
+      "step_ms_mean": 11.724649167081225,
+      "step_ms_p50": 11.542699998244643,
+      "step_ms_p90": 12.872999999672174,
+      "step_ms_p99": 14.427500005695038,
+      "topology_sparsity": 0.49706268310546875,
+      "binary_backend_effective": "packbits",
+      "cuda_ext_enabled": true
+    },
+    {
+      "variant": "cuda_ext",
+      "seed": 42,
+      "steps": 240,
+      "avg_loss": 3.675379173954328,
+      "last_loss": 3.394545793533325,
+      "tps": 42143.9846765891,
+      "peak_vram_mb": 32.88232421875,
+      "step_ms_mean": 11.954012500124614,
+      "step_ms_p50": 11.689099992509,
+      "step_ms_p90": 13.419499999145046,
+      "step_ms_p99": 16.550400003325194,
+      "topology_sparsity": 0.49706268310546875,
+      "binary_backend_effective": "cuda_ext",
+      "cuda_ext_enabled": true
+    },
+    {
+      "variant": "sta_v2",
+      "seed": 1337,
+      "steps": 240,
+      "avg_loss": 3.6123328695694608,
+      "last_loss": 2.878117799758911,
+      "tps": 25844.22958485787,
+      "peak_vram_mb": 39.033203125,
+      "step_ms_mean": 19.601553332843952,
+      "step_ms_p50": 19.250600002123974,
+      "step_ms_p90": 21.517000001040287,
+      "step_ms_p99": 24.61089999997057,
+      "topology_sparsity": 0.13060379028320312,
+      "binary_backend_effective": "n/a",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "packbits",
+      "seed": 1337,
+      "steps": 240,
+      "avg_loss": 3.6919521351655322,
+      "last_loss": 3.2048234939575195,
+      "tps": 38122.66949279792,
+      "peak_vram_mb": 32.88232421875,
+      "step_ms_mean": 13.178297916480611,
+      "step_ms_p50": 12.754600000334904,
+      "step_ms_p90": 15.568699993309565,
+      "step_ms_p99": 19.59549999446608,
+      "topology_sparsity": 0.4965782165527344,
+      "binary_backend_effective": "packbits",
+      "cuda_ext_enabled": true
+    },
+    {
+      "variant": "cuda_ext",
+      "seed": 1337,
+      "steps": 240,
+      "avg_loss": 3.6919521351655322,
+      "last_loss": 3.2048234939575195,
+      "tps": 34726.42301819476,
+      "peak_vram_mb": 32.88232421875,
+      "step_ms_mean": 14.38572416561025,
+      "step_ms_p50": 13.99739999033045,
+      "step_ms_p90": 16.862799995578825,
+      "step_ms_p99": 20.53219999652356,
+      "topology_sparsity": 0.4965782165527344,
+      "binary_backend_effective": "cuda_ext",
+      "cuda_ext_enabled": true
+    },
+    {
+      "variant": "sta_v2",
+      "seed": 2024,
+      "steps": 240,
+      "avg_loss": 3.671781140565872,
+      "last_loss": 3.327136993408203,
+      "tps": 23357.046653512363,
+      "peak_vram_mb": 39.033203125,
+      "step_ms_mean": 21.547733333621483,
+      "step_ms_p50": 20.455100006074645,
+      "step_ms_p90": 25.46230000734795,
+      "step_ms_p99": 33.86039999895729,
+      "topology_sparsity": 0.09288787841796875,
+      "binary_backend_effective": "n/a",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "packbits",
+      "seed": 2024,
+      "steps": 240,
+      "avg_loss": 3.6842812021573383,
+      "last_loss": 3.4888916015625,
+      "tps": 41879.04685099327,
+      "peak_vram_mb": 32.88232421875,
+      "step_ms_mean": 12.033035000604286,
+      "step_ms_p50": 11.716699998942204,
+      "step_ms_p90": 13.273999997181818,
+      "step_ms_p99": 17.965599996387027,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "packbits",
+      "cuda_ext_enabled": true
+    },
+    {
+      "variant": "cuda_ext",
+      "seed": 2024,
+      "steps": 240,
+      "avg_loss": 3.6842812021573383,
+      "last_loss": 3.4888916015625,
+      "tps": 42860.462928506706,
+      "peak_vram_mb": 32.88232421875,
+      "step_ms_mean": 11.759337917161853,
+      "step_ms_p50": 11.68179999513086,
+      "step_ms_p90": 12.615800005733036,
+      "step_ms_p99": 14.629000012064353,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "cuda_ext",
+      "cuda_ext_enabled": true
+    }
+  ],
+  "summary": [
+    {
+      "steps": 40,
+      "sta_v2": {
+        "variant": "sta_v2",
+        "steps": 40,
+        "runs": 3,
+        "avg_loss": 4.701058189074199,
+        "last_loss": 3.8442320028940835,
+        "tps": 20879.662282684676,
+        "peak_vram_mb": 39.033203125,
+        "step_ms_mean": 24.516379166622453,
+        "step_ms_p90": 26.489366665676545,
+        "step_ms_p99": 101.34959999898759,
+        "topology_sparsity": 0.00011952718098958333,
+        "backends": [
+          "n/a"
+        ],
+        "cuda_ext_flags": [
+          false
+        ]
+      },
+      "packbits": {
+        "variant": "packbits",
+        "steps": 40,
+        "runs": 3,
+        "avg_loss": 4.517380841573079,
+        "last_loss": 3.7010370095570884,
+        "tps": 38713.491012652026,
+        "peak_vram_mb": 32.88232421875,
+        "step_ms_mean": 13.127883332466203,
+        "step_ms_p90": 15.326366662823906,
+        "step_ms_p99": 21.16433332654803,
+        "topology_sparsity": 0.49609375,
+        "backends": [
+          "packbits"
+        ],
+        "cuda_ext_flags": [
+          true
+        ]
+      },
+      "cuda_ext": {
+        "variant": "cuda_ext",
+        "steps": 40,
+        "runs": 3,
+        "avg_loss": 4.517380841573079,
+        "last_loss": 3.7010370095570884,
+        "tps": 39327.6584411549,
+        "peak_vram_mb": 32.88232421875,
+        "step_ms_mean": 12.956613333396186,
+        "step_ms_p90": 14.738600002601743,
+        "step_ms_p99": 17.195966667107616,
+        "topology_sparsity": 0.49609375,
+        "backends": [
+          "cuda_ext"
+        ],
+        "cuda_ext_flags": [
+          true
+        ]
+      }
+    },
+    {
+      "steps": 120,
+      "sta_v2": {
+        "variant": "sta_v2",
+        "steps": 120,
+        "runs": 3,
+        "avg_loss": 3.9733347906006706,
+        "last_loss": 3.473194122314453,
+        "tps": 25231.119049117446,
+        "peak_vram_mb": 39.033203125,
+        "step_ms_mean": 20.098280278155773,
+        "step_ms_p90": 22.05336667248048,
+        "step_ms_p99": 26.94586666863567,
+        "topology_sparsity": 0.08662796020507812,
+        "backends": [
+          "n/a"
+        ],
+        "cuda_ext_flags": [
+          false
+        ]
+      },
+      "packbits": {
+        "variant": "packbits",
+        "steps": 120,
+        "runs": 3,
+        "avg_loss": 3.9013677014244927,
+        "last_loss": 3.508264938990275,
+        "tps": 39459.088210661655,
+        "peak_vram_mb": 32.88232421875,
+        "step_ms_mean": 12.800698611317785,
+        "step_ms_p90": 14.622533334962403,
+        "step_ms_p99": 17.075633334267575,
+        "topology_sparsity": 0.49609375,
+        "backends": [
+          "packbits"
+        ],
+        "cuda_ext_flags": [
+          true
+        ]
+      },
+      "cuda_ext": {
+        "variant": "cuda_ext",
+        "steps": 120,
+        "runs": 3,
+        "avg_loss": 3.9013677014244927,
+        "last_loss": 3.508264938990275,
+        "tps": 38552.30921963888,
+        "peak_vram_mb": 32.88232421875,
+        "step_ms_mean": 13.086055277664045,
+        "step_ms_p90": 15.070266667559432,
+        "step_ms_p99": 19.516899997446064,
+        "topology_sparsity": 0.49609375,
+        "backends": [
+          "cuda_ext"
+        ],
+        "cuda_ext_flags": [
+          true
+        ]
+      }
+    },
+    {
+      "steps": 240,
+      "sta_v2": {
+        "variant": "sta_v2",
+        "steps": 240,
+        "runs": 3,
+        "avg_loss": 3.637841800848643,
+        "last_loss": 3.0999437967936196,
+        "tps": 24270.87232274993,
+        "peak_vram_mb": 39.033203125,
+        "step_ms_mean": 20.82558874984291,
+        "step_ms_p90": 23.88440000261956,
+        "step_ms_p99": 30.005499997059815,
+        "topology_sparsity": 0.07750829060872395,
+        "backends": [
+          "n/a"
+        ],
+        "cuda_ext_flags": [
+          false
+        ]
+      },
+      "packbits": {
+        "variant": "packbits",
+        "steps": 240,
+        "runs": 3,
+        "avg_loss": 3.6838708370923996,
+        "last_loss": 3.3627536296844482,
+        "tps": 41003.47640438629,
+        "peak_vram_mb": 32.88232421875,
+        "step_ms_mean": 12.311994028055373,
+        "step_ms_p90": 13.90523333005452,
+        "step_ms_p99": 17.329533332182717,
+        "topology_sparsity": 0.4965782165527344,
+        "backends": [
+          "packbits"
+        ],
+        "cuda_ext_flags": [
+          true
+        ]
+      },
+      "cuda_ext": {
+        "variant": "cuda_ext",
+        "steps": 240,
+        "runs": 3,
+        "avg_loss": 3.6838708370923996,
+        "last_loss": 3.3627536296844482,
+        "tps": 39910.290207763515,
+        "peak_vram_mb": 32.88232421875,
+        "step_ms_mean": 12.69969152763224,
+        "step_ms_p90": 14.299366666818969,
+        "step_ms_p99": 17.237200003971036,
+        "topology_sparsity": 0.4965782165527344,
+        "backends": [
+          "cuda_ext"
+        ],
+        "cuda_ext_flags": [
+          true
+        ]
+      }
+    }
+  ],
+  "decision": {
+    "thresholds": {
+      "loss_delta_max": 0.05,
+      "tps_gain_min": 1.1,
+      "p99_regress_max": 0.2,
+      "vram_overhead_max": 50.0
+    },
+    "per_budget": [
+      {
+        "steps": 40,
+        "verdict": "FAIL",
+        "loss_delta": 0.0,
+        "tps_ratio": 1.0159,
+        "p99_ratio": 0.8125,
+        "vram_delta_mb": 0.0,
+        "ok_loss": true,
+        "ok_tps": false,
+        "ok_p99": true,
+        "ok_vram": true,
+        "details": {
+          "cuda_ext_tps": 39327.7,
+          "packbits_tps": 38713.5,
+          "cuda_ext_loss": 3.701037,
+          "packbits_loss": 3.701037,
+          "cuda_ext_p99_ms": 17.196,
+          "packbits_p99_ms": 21.164,
+          "cuda_ext_vram": 32.88,
+          "packbits_vram": 32.88
+        }
+      },
+      {
+        "steps": 120,
+        "verdict": "FAIL",
+        "loss_delta": 0.0,
+        "tps_ratio": 0.977,
+        "p99_ratio": 1.143,
+        "vram_delta_mb": 0.0,
+        "ok_loss": true,
+        "ok_tps": false,
+        "ok_p99": true,
+        "ok_vram": true,
+        "details": {
+          "cuda_ext_tps": 38552.3,
+          "packbits_tps": 39459.1,
+          "cuda_ext_loss": 3.508265,
+          "packbits_loss": 3.508265,
+          "cuda_ext_p99_ms": 19.517,
+          "packbits_p99_ms": 17.076,
+          "cuda_ext_vram": 32.88,
+          "packbits_vram": 32.88
+        }
+      },
+      {
+        "steps": 240,
+        "verdict": "FAIL",
+        "loss_delta": 0.0,
+        "tps_ratio": 0.9733,
+        "p99_ratio": 0.9947,
+        "vram_delta_mb": 0.0,
+        "ok_loss": true,
+        "ok_tps": false,
+        "ok_p99": true,
+        "ok_vram": true,
+        "details": {
+          "cuda_ext_tps": 39910.3,
+          "packbits_tps": 41003.5,
+          "cuda_ext_loss": 3.362754,
+          "packbits_loss": 3.362754,
+          "cuda_ext_p99_ms": 17.237,
+          "packbits_p99_ms": 17.33,
+          "cuda_ext_vram": 32.88,
+          "packbits_vram": 32.88
+        }
+      }
+    ],
+    "overall": "KEEP_PACKBITS",
+    "recommendation": "⚠️  保持 packbits 为默认（cuda_ext 未完全满足门槛）\n未通过的判据:\n  • steps=40: tps_ratio=1.016<1.1\n  • steps=120: tps_ratio=0.977<1.1\n  • steps=240: tps_ratio=0.973<1.1\n\n下一步建议:\n  1. 检查 cuda_ext kernel 是否正确实现（数值精度）\n  2. 若仅 TPS 不达标，考虑优化 kernel 内存访问\n  3. 可降低门槛（修改本脚本顶部的 THRESHOLD_* 常量）"
+  }
+}

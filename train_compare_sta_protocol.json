@@ -1,0 +1,507 @@
+{
+  "device": "cuda:0",
+  "config": {
+    "seeds": [
+      11,
+      23,
+      37
+    ],
+    "step_budgets": [
+      40,
+      120,
+      240
+    ],
+    "batch_size": 4,
+    "seq_len": 128,
+    "dim": 128,
+    "layers": 4,
+    "lr": 0.0003,
+    "binary_backend": "cuda_ext",
+    "corpus": "data/open_corpus/open_corpus.txt"
+  },
+  "raw_runs": [
+    {
+      "variant": "sta_v2",
+      "seed": 11,
+      "steps": 40,
+      "avg_loss": 4.686195462942123,
+      "last_loss": 3.9689290523529053,
+      "tokens_per_sec": 18526.921570894578,
+      "peak_vram_mb": 39.033203125,
+      "step_time_ms_mean": 27.234462500564405,
+      "step_time_ms_p50": 20.776099991053343,
+      "step_time_ms_p90": 25.1501000020653,
+      "step_time_ms_p99": 260.0419999944279,
+      "topology_sparsity": 0.0,
+      "binary_backend_effective": "n/a",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "binary_sta_cuda_ext",
+      "seed": 11,
+      "steps": 40,
+      "avg_loss": 4.51226744055748,
+      "last_loss": 3.8700828552246094,
+      "tokens_per_sec": 34253.38574143607,
+      "peak_vram_mb": 32.88232421875,
+      "step_time_ms_mean": 14.58732000173768,
+      "step_time_ms_p50": 13.624300001538359,
+      "step_time_ms_p90": 17.021699997712858,
+      "step_time_ms_p99": 27.82620000652969,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "packbits",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "sta_v2",
+      "seed": 23,
+      "steps": 40,
+      "avg_loss": 4.659101885557175,
+      "last_loss": 3.997933864593506,
+      "tokens_per_sec": 22376.69572029907,
+      "peak_vram_mb": 39.033203125,
+      "step_time_ms_mean": 22.49946249939967,
+      "step_time_ms_p50": 21.636200006469153,
+      "step_time_ms_p90": 26.334499998483807,
+      "step_time_ms_p99": 34.294700002647005,
+      "topology_sparsity": 0.005741119384765625,
+      "binary_backend_effective": "n/a",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "binary_sta_cuda_ext",
+      "seed": 23,
+      "steps": 40,
+      "avg_loss": 4.4872184038162235,
+      "last_loss": 3.9226794242858887,
+      "tokens_per_sec": 34310.28864689694,
+      "peak_vram_mb": 32.88232421875,
+      "step_time_ms_mean": 14.539082500778022,
+      "step_time_ms_p50": 14.266099999076687,
+      "step_time_ms_p90": 16.322900002705865,
+      "step_time_ms_p99": 18.72830001229886,
+      "topology_sparsity": 0.4980621337890625,
+      "binary_backend_effective": "packbits",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "sta_v2",
+      "seed": 37,
+      "steps": 40,
+      "avg_loss": 4.713193082809449,
+      "last_loss": 4.076460361480713,
+      "tokens_per_sec": 23153.887315056243,
+      "peak_vram_mb": 39.033203125,
+      "step_time_ms_mean": 21.70859000107157,
+      "step_time_ms_p50": 20.847299994784407,
+      "step_time_ms_p90": 24.06370000971947,
+      "step_time_ms_p99": 29.29950000543613,
+      "topology_sparsity": 0.0,
+      "binary_backend_effective": "n/a",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "binary_sta_cuda_ext",
+      "seed": 37,
+      "steps": 40,
+      "avg_loss": 4.532495307922363,
+      "last_loss": 3.9475700855255127,
+      "tokens_per_sec": 35671.38226743997,
+      "peak_vram_mb": 32.88232421875,
+      "step_time_ms_mean": 13.98117750104575,
+      "step_time_ms_p50": 13.553999990108423,
+      "step_time_ms_p90": 16.160400002263486,
+      "step_time_ms_p99": 18.827900014002807,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "packbits",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "sta_v2",
+      "seed": 11,
+      "steps": 120,
+      "avg_loss": 3.9378826518853507,
+      "last_loss": 3.4255449771881104,
+      "tokens_per_sec": 23879.78765641723,
+      "peak_vram_mb": 39.033203125,
+      "step_time_ms_mean": 21.061301667335403,
+      "step_time_ms_p50": 19.97039999696426,
+      "step_time_ms_p90": 24.023099991609342,
+      "step_time_ms_p99": 30.30399999988731,
+      "topology_sparsity": 0.08203506469726562,
+      "binary_backend_effective": "n/a",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "binary_sta_cuda_ext",
+      "seed": 11,
+      "steps": 120,
+      "avg_loss": 3.8780443608760833,
+      "last_loss": 3.4750919342041016,
+      "tokens_per_sec": 33128.61781487092,
+      "peak_vram_mb": 32.88232421875,
+      "step_time_ms_mean": 15.06253999953818,
+      "step_time_ms_p50": 14.016300003277138,
+      "step_time_ms_p90": 19.207299992558546,
+      "step_time_ms_p99": 29.310099998838268,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "packbits",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "sta_v2",
+      "seed": 23,
+      "steps": 120,
+      "avg_loss": 3.911020588874817,
+      "last_loss": 3.506338596343994,
+      "tokens_per_sec": 22501.521709361885,
+      "peak_vram_mb": 39.033203125,
+      "step_time_ms_mean": 22.502557500168525,
+      "step_time_ms_p50": 21.526000011363067,
+      "step_time_ms_p90": 26.268700006767176,
+      "step_time_ms_p99": 32.22049999749288,
+      "topology_sparsity": 0.054798126220703125,
+      "binary_backend_effective": "n/a",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "binary_sta_cuda_ext",
+      "seed": 23,
+      "steps": 120,
+      "avg_loss": 3.8717160880565644,
+      "last_loss": 3.7323620319366455,
+      "tokens_per_sec": 40640.12697891253,
+      "peak_vram_mb": 32.88232421875,
+      "step_time_ms_mean": 12.40951666707891,
+      "step_time_ms_p50": 11.994000000413507,
+      "step_time_ms_p90": 14.192500006174669,
+      "step_time_ms_p99": 18.0324999964796,
+      "topology_sparsity": 0.4965705871582031,
+      "binary_backend_effective": "packbits",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "sta_v2",
+      "seed": 37,
+      "steps": 120,
+      "avg_loss": 3.9633136053880054,
+      "last_loss": 3.430720806121826,
+      "tokens_per_sec": 23061.610458607953,
+      "peak_vram_mb": 39.033203125,
+      "step_time_ms_mean": 21.90611333268559,
+      "step_time_ms_p50": 20.206200002576225,
+      "step_time_ms_p90": 25.772300010430627,
+      "step_time_ms_p99": 37.33500000089407,
+      "topology_sparsity": 0.05539703369140625,
+      "binary_backend_effective": "n/a",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "binary_sta_cuda_ext",
+      "seed": 37,
+      "steps": 120,
+      "avg_loss": 3.897179285685221,
+      "last_loss": 3.5203983783721924,
+      "tokens_per_sec": 40377.805876278326,
+      "peak_vram_mb": 32.88232421875,
+      "step_time_ms_mean": 12.499901666645505,
+      "step_time_ms_p50": 11.988800004473887,
+      "step_time_ms_p90": 14.488899993011728,
+      "step_time_ms_p99": 18.18279999133665,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "packbits",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "sta_v2",
+      "seed": 11,
+      "steps": 240,
+      "avg_loss": 3.5848465730746586,
+      "last_loss": 3.084972858428955,
+      "tokens_per_sec": 25197.682772818855,
+      "peak_vram_mb": 39.033203125,
+      "step_time_ms_mean": 20.109009999820653,
+      "step_time_ms_p50": 19.591100004618056,
+      "step_time_ms_p90": 22.81569999468047,
+      "step_time_ms_p99": 26.958100002957508,
+      "topology_sparsity": 0.036945343017578125,
+      "binary_backend_effective": "n/a",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "binary_sta_cuda_ext",
+      "seed": 11,
+      "steps": 240,
+      "avg_loss": 3.661027369896571,
+      "last_loss": 3.4114222526550293,
+      "tokens_per_sec": 41910.16061830018,
+      "peak_vram_mb": 32.88232421875,
+      "step_time_ms_mean": 12.02927416664655,
+      "step_time_ms_p50": 11.748699995223433,
+      "step_time_ms_p90": 13.329900000826456,
+      "step_time_ms_p99": 15.624100007698871,
+      "topology_sparsity": 0.5033302307128906,
+      "binary_backend_effective": "packbits",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "sta_v2",
+      "seed": 23,
+      "steps": 240,
+      "avg_loss": 3.544271437327067,
+      "last_loss": 3.014507532119751,
+      "tokens_per_sec": 25681.2549556272,
+      "peak_vram_mb": 39.033203125,
+      "step_time_ms_mean": 19.73742041688335,
+      "step_time_ms_p50": 19.325500004924834,
+      "step_time_ms_p90": 21.716100003686734,
+      "step_time_ms_p99": 25.139000004855916,
+      "topology_sparsity": 0.003589630126953125,
+      "binary_backend_effective": "n/a",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "binary_sta_cuda_ext",
+      "seed": 23,
+      "steps": 240,
+      "avg_loss": 3.6534632325172423,
+      "last_loss": 3.288857936859131,
+      "tokens_per_sec": 40919.65185930468,
+      "peak_vram_mb": 32.88232421875,
+      "step_time_ms_mean": 12.313275000572807,
+      "step_time_ms_p50": 12.004999996861443,
+      "step_time_ms_p90": 13.806100003421307,
+      "step_time_ms_p99": 16.746299996157177,
+      "topology_sparsity": 0.49609375,
+      "binary_backend_effective": "packbits",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "sta_v2",
+      "seed": 37,
+      "steps": 240,
+      "avg_loss": 3.6084354062875112,
+      "last_loss": 2.9408726692199707,
+      "tokens_per_sec": 25448.29001901277,
+      "peak_vram_mb": 39.033203125,
+      "step_time_ms_mean": 19.92245958390413,
+      "step_time_ms_p50": 19.377399992663413,
+      "step_time_ms_p90": 21.881099994061515,
+      "step_time_ms_p99": 28.420899994671345,
+      "topology_sparsity": 0.06423187255859375,
+      "binary_backend_effective": "n/a",
+      "cuda_ext_enabled": false
+    },
+    {
+      "variant": "binary_sta_cuda_ext",
+      "seed": 37,
+      "steps": 240,
+      "avg_loss": 3.671225467324257,
+      "last_loss": 3.1775078773498535,
+      "tokens_per_sec": 44181.33634093277,
+      "peak_vram_mb": 32.88232421875,
+      "step_time_ms_mean": 11.399618332992153,
+      "step_time_ms_p50": 11.298500001430511,
+      "step_time_ms_p90": 12.259199997060932,
+      "step_time_ms_p99": 14.00640000065323,
+      "topology_sparsity": 0.4975242614746094,
+      "binary_backend_effective": "packbits",
+      "cuda_ext_enabled": false
+    }
+  ],
+  "summary": [
+    {
+      "steps": 40,
+      "sta_v2": {
+        "variant": "sta_v2",
+        "steps": 40,
+        "runs": 3,
+        "avg_loss": 4.686163477102915,
+        "last_loss": 4.014441092809041,
+        "tokens_per_sec": 21352.501535416628,
+        "peak_vram_mb": 39.033203125,
+        "step_time_ms_mean": 23.81417166701188,
+        "step_time_ms_p90": 25.182766670089524,
+        "step_time_ms_p99": 107.87873333417035,
+        "topology_sparsity": 0.0019137064615885417,
+        "binary_backend_effective": [
+          "n/a"
+        ],
+        "cuda_ext_enabled": [
+          false
+        ]
+      },
+      "binary": {
+        "variant": "binary_sta_cuda_ext",
+        "steps": 40,
+        "runs": 3,
+        "avg_loss": 4.5106603840986885,
+        "last_loss": 3.9134441216786704,
+        "tokens_per_sec": 34745.01888525766,
+        "peak_vram_mb": 32.88232421875,
+        "step_time_ms_mean": 14.369193334520483,
+        "step_time_ms_p90": 16.501666667560738,
+        "step_time_ms_p99": 21.794133344277117,
+        "topology_sparsity": 0.4967498779296875,
+        "binary_backend_effective": [
+          "packbits"
+        ],
+        "cuda_ext_enabled": [
+          false
+        ]
+      },
+      "delta": {
+        "loss_last_binary_minus_sta": -0.10099697113037065,
+        "tokens_per_sec_binary_over_sta": 1.6272106960220725,
+        "peak_vram_mb_binary_minus_sta": -6.15087890625,
+        "step_p99_ms_binary_minus_sta": -86.08459998989323
+      }
+    },
+    {
+      "steps": 120,
+      "sta_v2": {
+        "variant": "sta_v2",
+        "steps": 120,
+        "runs": 3,
+        "avg_loss": 3.9374056153827244,
+        "last_loss": 3.4542014598846436,
+        "tokens_per_sec": 23147.639941462356,
+        "peak_vram_mb": 39.033203125,
+        "step_time_ms_mean": 21.823324166729837,
+        "step_time_ms_p90": 25.354700002935715,
+        "step_time_ms_p99": 33.286499999424755,
+        "topology_sparsity": 0.06407674153645833,
+        "binary_backend_effective": [
+          "n/a"
+        ],
+        "cuda_ext_enabled": [
+          false
+        ]
+      },
+      "binary": {
+        "variant": "binary_sta_cuda_ext",
+        "steps": 120,
+        "runs": 3,
+        "avg_loss": 3.882313244872623,
+        "last_loss": 3.575950781504313,
+        "tokens_per_sec": 38048.850223353926,
+        "peak_vram_mb": 32.88232421875,
+        "step_time_ms_mean": 13.32398611108753,
+        "step_time_ms_p90": 15.962899997248314,
+        "step_time_ms_p99": 21.841799995551508,
+        "topology_sparsity": 0.49625269571940106,
+        "binary_backend_effective": [
+          "packbits"
+        ],
+        "cuda_ext_enabled": [
+          false
+        ]
+      },
+      "delta": {
+        "loss_last_binary_minus_sta": 0.12174932161966945,
+        "tokens_per_sec_binary_over_sta": 1.6437464173269918,
+        "peak_vram_mb_binary_minus_sta": -6.15087890625,
+        "step_p99_ms_binary_minus_sta": -11.444700003873248
+      }
+    },
+    {
+      "steps": 240,
+      "sta_v2": {
+        "variant": "sta_v2",
+        "steps": 240,
+        "runs": 3,
+        "avg_loss": 3.579184472229746,
+        "last_loss": 3.013451019922892,
+        "tokens_per_sec": 25442.40924915294,
+        "peak_vram_mb": 39.033203125,
+        "step_time_ms_mean": 19.922963333536043,
+        "step_time_ms_p90": 22.137633330809575,
+        "step_time_ms_p99": 26.83933333416159,
+        "topology_sparsity": 0.034922281901041664,
+        "binary_backend_effective": [
+          "n/a"
+        ],
+        "cuda_ext_enabled": [
+          false
+        ]
+      },
+      "binary": {
+        "variant": "binary_sta_cuda_ext",
+        "steps": 240,
+        "runs": 3,
+        "avg_loss": 3.6619053565793567,
+        "last_loss": 3.2925960222880044,
+        "tokens_per_sec": 42337.049606179215,
+        "peak_vram_mb": 32.88232421875,
+        "step_time_ms_mean": 11.914055833403836,
+        "step_time_ms_p90": 13.131733333769565,
+        "step_time_ms_p99": 15.458933334836425,
+        "topology_sparsity": 0.4989827473958333,
+        "binary_backend_effective": [
+          "packbits"
+        ],
+        "cuda_ext_enabled": [
+          false
+        ]
+      },
+      "delta": {
+        "loss_last_binary_minus_sta": 0.2791450023651123,
+        "tokens_per_sec_binary_over_sta": 1.6640346121147607,
+        "peak_vram_mb_binary_minus_sta": -6.15087890625,
+        "step_p99_ms_binary_minus_sta": -11.380399999325165
+      }
+    }
+  ],
+  "hotspot_sta_v2": {
+    "status": "ok",
+    "top_cuda_table": [
+      "-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ",
+      "                                                   Name    Self CPU %      Self CPU   CPU total %     CPU total  CPU time avg     Self CUDA   Self CUDA %    CUDA total  CUDA time avg       CPU Mem  Self CPU Mem      CUDA Mem  Self CUDA Mem    # of Calls  ",
+      "-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ",
+      "                                               aten::mm         4.58%      49.987ms         4.58%      49.987ms      28.337us      55.115ms         4.75%      55.115ms      31.244us           0 b           0 b     165.75 Mb     165.75 Mb          1764  ",
+      "                                        aten::transpose         3.76%      41.026ms         4.00%      43.706ms      13.149us      45.845ms         3.95%      66.968ms      20.147us           0 b           0 b           0 b           0 b          3324  ",
+      "                                 aten::_index_put_impl_         3.54%      38.615ms         7.43%      81.150ms     140.885us      44.930ms         3.87%      96.011ms     166.686us           0 b        -168 b           0 b    -480.00 Kb           576  ",
+      "                                              aten::mul         3.46%      37.748ms         3.46%      37.748ms      15.420us      43.243ms         3.73%      43.243ms      17.665us         120 b         120 b     319.03 Mb     319.03 Mb          2448  ",
+      "                                                aten::t         3.67%      40.036ms         7.15%      78.014ms      26.535us      40.922ms         3.53%     101.438ms      34.503us           0 b           0 b           0 b           0 b          2940  ",
+      "                                       aten::as_strided         0.51%       5.544ms         0.51%       5.544ms       0.887us      39.679ms         3.42%      39.679ms       6.347us           0 b           0 b           0 b           0 b          6252  ",
+      "                                          aten::reshape         3.18%      34.745ms         3.76%      41.053ms      14.435us      35.439ms         3.05%      63.214ms      22.227us           0 b           0 b           0 b           0 b          2844  ",
+      "                                             aten::view         0.61%       6.632ms         0.61%       6.632ms       2.117us      30.386ms         2.62%      30.386ms       9.702us           0 b           0 b           0 b           0 b          3132  ",
+      "                                      aten::result_type         0.07%     769.600us         0.07%     769.600us       0.153us      29.589ms         2.55%      29.589ms       5.899us           0 b           0 b           0 b           0 b          5016  ",
+      "                                            aten::copy_         2.48%      27.113ms         2.48%      27.113ms      15.912us      28.812ms         2.48%      28.812ms      16.908us           0 b           0 b           0 b           0 b          1704  ",
+      "                                            MmBackward0         3.41%      37.188ms        10.64%     116.133ms     197.505us      27.473ms         2.37%     123.194ms     209.514us           0 b           0 b      83.25 Mb           0 b           588  ",
+      "                              Optimizer.step#AdamW.step         3.52%      38.431ms        13.88%     151.526ms      12.627ms      25.051ms         2.16%     151.323ms      12.610ms         268 b         -48 b     658.00 Kb      -3.86 Mb            12  ",
+      "                                             aten::add_         1.11%      12.142ms         1.11%      12.142ms       7.076us      20.304ms         1.75%      20.304ms      11.832us           0 b           0 b           0 b           0 b          1716  ",
+      "                                            aten::empty         0.70%       7.597ms         0.70%       7.597ms       2.699us      20.175ms         1.74%      20.175ms       7.167us      94.31 Kb      92.31 Kb     322.46 Mb     322.46 Mb          2815  ",
+      "                                           aten::matmul         1.92%      20.957ms         4.46%      48.660ms      82.754us      19.497ms         1.68%      56.608ms      96.272us           0 b           0 b      82.50 Mb           0 b           588  ",
+      "-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ",
+      "Self CPU time total: 1.092s",
+      "Self CUDA time total: 1.161s"
+    ]
+  },
+  "hotspot_binary": {
+    "status": "ok",
+    "top_cuda_table": [
+      "-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ",
+      "                                                   Name    Self CPU %      Self CPU   CPU total %     CPU total  CPU time avg     Self CUDA   Self CUDA %    CUDA total  CUDA time avg       CPU Mem  Self CPU Mem      CUDA Mem  Self CUDA Mem    # of Calls  ",
+      "-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ",
+      "                                               aten::mm         4.09%      26.918ms         4.09%      26.918ms      28.395us      51.246ms         7.10%      51.246ms      54.057us           0 b           0 b     128.25 Mb     128.25 Mb           948  ",
+      "                                       aten::as_strided         0.53%       3.493ms         0.53%       3.493ms       0.864us      26.490ms         3.67%      26.490ms       6.549us           0 b           0 b           0 b           0 b          4045  ",
+      "                                      aten::result_type         0.07%     443.000us         0.07%     443.000us       0.143us      25.601ms         3.55%      25.601ms       8.269us           0 b           0 b           0 b           0 b          3096  ",
+      "                                            aten::copy_         6.67%      43.947ms         6.67%      43.947ms      60.533us      24.248ms         3.36%      24.248ms      33.399us           0 b           0 b           0 b           0 b           726  ",
+      "                                                aten::t         3.53%      23.253ms         6.97%      45.902ms      28.300us      23.162ms         3.21%      55.663ms      34.318us           0 b           0 b           0 b           0 b          1622  ",
+      "                                        aten::transpose         3.43%      22.623ms         3.64%      24.015ms      13.979us      22.347ms         3.10%      33.873ms      19.717us           0 b           0 b           0 b           0 b          1718  ",
+      "                                          aten::reshape         2.45%      16.149ms         2.93%      19.288ms      13.488us      20.927ms         2.90%      29.647ms      20.732us           0 b           0 b           0 b           0 b          1430  ",
+      "                                            aten::index         2.56%      16.857ms         4.79%      31.560ms      74.964us      19.777ms         2.74%      38.501ms      91.451us           0 b           0 b      49.70 Mb      49.67 Mb           421  ",
+      "                              aten::_local_scalar_dense        10.88%      71.694ms        10.88%      71.694ms      60.964us      18.654ms         2.58%      18.654ms      15.862us           0 b           0 b           0 b           0 b          1176  ",
+      "                                         aten::_to_copy         1.88%      12.400ms         8.29%      54.627ms     107.533us      18.354ms         2.54%      43.421ms      85.474us           0 b           0 b     113.14 Mb           0 b           508  ",
+      "                                              aten::bmm         1.32%       8.722ms         1.32%       8.722ms      45.425us      17.418ms         2.41%      17.418ms      90.719us           0 b           0 b      36.00 Mb      36.00 Mb           192  ",
+      "                                          aten::nonzero         3.43%      22.588ms         3.89%      25.650ms     346.622us      16.236ms         2.25%      18.856ms     254.811us           0 b           0 b      67.00 Kb           0 b            74  ",
+      "                                              aten::add         1.25%       8.236ms         1.25%       8.236ms      13.177us      15.759ms         2.18%      15.759ms      25.214us           0 b           0 b      63.30 Mb      63.30 Mb           625  ",
+      "                                            aten::empty         0.54%       3.525ms         0.54%       3.525ms       2.358us      15.126ms         2.10%      15.126ms      10.118us      96.21 Kb      96.21 Kb     356.07 Mb     356.07 Mb          1495  ",
+      "                                             aten::view         0.63%       4.123ms         0.63%       4.123ms       2.046us      14.700ms         2.04%      14.700ms       7.295us           0 b           0 b           0 b           0 b          2015  ",
+      "-------------------------------------------------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ------------  ",
+      "Self CPU time total: 658.858ms",
+      "Self CUDA time total: 721.825ms"
+    ]
+  }
+}

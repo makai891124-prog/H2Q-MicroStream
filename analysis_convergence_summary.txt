@@ -1,0 +1,54 @@
+=== Convergence Analysis Summary ===
+
+File: telemetry_A_baseline.csv
+  Samples: 2, Steps: (1, 2)
+  Columns: ['timestamp', 'chunk', 'train_loss', 'val_loss', 'sta_sparsity', 'tcrh_connectivity', 'ortho_loss', 'tokens_per_sec', 'vram_alloc_gb']
+  Slope (Pre-200): -8.965340e-01
+  Slope (Mid):     -8.965340e-01
+  Slope (Last 100):-8.965340e-01
+  EMA R2:          1.0000
+  Resid Std/Roll Var: 0.3003 / 0.4019
+
+File: telemetry_B_eval_down.csv
+  Samples: 2, Steps: (1, 2)
+  Columns: ['timestamp', 'chunk', 'train_loss', 'val_loss', 'sta_sparsity', 'tcrh_connectivity', 'ortho_loss', 'tokens_per_sec', 'vram_alloc_gb']
+  Slope (Pre-200): -2.268564e+00
+  Slope (Mid):     -2.268564e+00
+  Slope (Last 100):-2.268564e+00
+  EMA R2:          1.0000
+  Resid Std/Roll Var: 0.7598 / 2.5732
+
+File: telemetry_C_no_supervise.csv
+  Samples: 2, Steps: (1, 2)
+  Columns: ['timestamp', 'chunk', 'train_loss', 'val_loss', 'sta_sparsity', 'tcrh_connectivity', 'ortho_loss', 'tokens_per_sec', 'vram_alloc_gb']
+  Slope (Pre-200): -1.828707e+00
+  Slope (Mid):     -1.828707e+00
+  Slope (Last 100):-1.828707e+00
+  EMA R2:          1.0000
+  Resid Std/Roll Var: 0.6125 / 1.6721
+
+=== Curve Morphological Data (Step, Loss, EMA) ===
+
+--- telemetry_A_baseline.csv ---
+HEAD 20:
+  {'chunk': 1, 'train_loss': 3.818335, 'ema': 3.818335}
+  {'chunk': 2, 'train_loss': 2.921801, 'ema': 3.346475}
+TAIL 20:
+  {'chunk': 1, 'train_loss': 3.818335, 'ema': 3.818335}
+  {'chunk': 2, 'train_loss': 2.921801, 'ema': 3.346475}
+
+--- telemetry_B_eval_down.csv ---
+HEAD 20:
+  {'chunk': 1, 'train_loss': 5.185124, 'ema': 5.185124}
+  {'chunk': 2, 'train_loss': 2.91656, 'ema': 3.9911429473684215}
+TAIL 20:
+  {'chunk': 1, 'train_loss': 5.185124, 'ema': 5.185124}
+  {'chunk': 2, 'train_loss': 2.91656, 'ema': 3.9911429473684215}
+
+--- telemetry_C_no_supervise.csv ---
+HEAD 20:
+  {'chunk': 1, 'train_loss': 4.746451, 'ema': 4.746451}
+  {'chunk': 2, 'train_loss': 2.917744, 'ema': 3.783973631578948}
+TAIL 20:
+  {'chunk': 1, 'train_loss': 4.746451, 'ema': 4.746451}
+  {'chunk': 2, 'train_loss': 2.917744, 'ema': 3.783973631578948}

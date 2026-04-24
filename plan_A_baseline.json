@@ -1,0 +1,8 @@
+{
+  "name": "方案 A - 基线（对照组）",
+  "description": "原配不变，作为基准对照",
+  "modifications": [],
+  "expected_tps": 18014.445544554455,
+  "expected_loss": 1.7872644554455446,
+  "execution": "python agi_joint_trainer.py  # 直接运行 50 chunk"
+}

@@ -1,0 +1,105 @@
+{
+  "acceptance": {
+    "core_checks": {
+      "small_correctness": true,
+      "evolution_check": true,
+      "cuda_dummy_forward": true,
+      "cuda_stress_2048": true
+    },
+    "h2q_smoke": {
+      "device": "cuda:0",
+      "logits_shape": [
+        2,
+        64,
+        256
+      ],
+      "loss": 5.578938961029053,
+      "topology_sparsity": 0.4921875,
+      "generated_shape": [
+        1,
+        16
+      ]
+    },
+    "trainer_smoke": {
+      "logits_shape": [
+        2,
+        32,
+        256
+      ],
+      "loss": 30.544940948486328,
+      "stats": {
+        "sta_sparsity_mean": 0.484375,
+        "tcrh_conn_mean": 0.031982421875,
+        "ortho_loss": 239.0563201904297
+      },
+      "generated_shape": [
+        1,
+        10
+      ]
+    }
+  },
+  "benchmark": {
+    "status": "ok",
+    "seq1024": {
+      "sta_v2": {
+        "name": "sta_v2_1024",
+        "output_shape": [
+          4,
+          1024,
+          768
+        ],
+        "avg_time_ms": 1.7542666610097513,
+        "min_time_ms": 1.5543999907094985,
+        "max_time_ms": 2.070999995339662,
+        "peak_vram_mb": 209.576171875,
+        "last_sparsity": 0.0,
+        "routing_density": 0.0
+      },
+      "binary_sta": {
+        "name": "binary_sta_1024",
+        "output_shape": [
+          4,
+          1024,
+          768
+        ],
+        "avg_time_ms": 7.8031000011833385,
+        "min_time_ms": 7.3201000050175935,
+        "max_time_ms": 8.380400002351962,
+        "peak_vram_mb": 132.318359375,
+        "last_sparsity": 0.49951171875,
+        "routing_density": 0.50048828125
+      }
+    },
+    "seq2048": {
+      "sta_v2": {
+        "name": "sta_v2_2048",
+        "output_shape": [
+          1,
+          2048,
+          768
+        ],
+        "avg_time_ms": 1.677599997492507,
+        "min_time_ms": 1.6059000045061111,
+        "max_time_ms": 1.749299990478903,
+        "peak_vram_mb": 169.419921875,
+        "last_sparsity": 0.0,
+        "routing_density": 0.0
+      },
+      "binary_sta": {
+        "name": "binary_sta_2048",
+        "output_shape": [
+          1,
+          2048,
+          768
+        ],
+        "avg_time_ms": 14.699900006235112,
+        "min_time_ms": 14.60800001223106,
+        "max_time_ms": 14.791800000239164,
+        "peak_vram_mb": 88.630859375,
+        "last_sparsity": 0.499755859375,
+        "routing_density": 0.500244140625
+      }
+    }
+  },
+  "analysis": "binary_sta completed three-level acceptance: core correctness/evolution/GPU long sequence passed; h2q_evolution and agi_joint_trainer are both configurable and passed smoke tests; benchmark provides direct comparison with sta_v2 for further default path decisions."
+}

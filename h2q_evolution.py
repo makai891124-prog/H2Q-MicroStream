@@ -20,12 +20,17 @@ Architecture:
 """
 
 import math
+import os
 
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from sta_core_v2 import Rank8_Projection, Stereographic_Attention_Layer_V2
+from sta_core_v2 import (
+    Rank8_Projection,
+    StereographicAttentionLayer,
+    Stereographic_Attention_Layer_V2,
+)
 
 # ---------------------------------------------------------------------------
 # Rank-8 Feed-Forward Block
@@ -82,16 +87,35 @@ class STA_Block(nn.Module):
         rank: int = 8,
         shockwave_threshold: float = math.pi / 2,
         max_seq_len: int = 2048,
+        attention_type: str = "sta_v2",
+        binary_num_planes: int = 128,
+        binary_chunk_size: int = 64,
+        binary_routing_mode: str = "normalize",
+        binary_backend: str = "packbits",
+        binary_fused_chunk_compute: bool = True,
     ):
         super().__init__()
         self.norm1 = nn.LayerNorm(dim)
-        self.attn  = Stereographic_Attention_Layer_V2(
-            hidden_dim=dim,
-            shockwave_threshold=shockwave_threshold,
-            rank=rank,
-            max_seq_len=max_seq_len,
-            causal=True,          # enforce time-arrow causality
-        )
+        if attention_type == "binary_sta":
+            self.attn = StereographicAttentionLayer(
+                hidden_dim=dim,
+                num_planes=binary_num_planes,
+                chunk_size=binary_chunk_size,
+                routing_mode=binary_routing_mode,
+                binary_backend=binary_backend,
+                fused_chunk_compute=binary_fused_chunk_compute,
+                causal=True,
+            )
+        elif attention_type == "sta_v2":
+            self.attn = Stereographic_Attention_Layer_V2(
+                hidden_dim=dim,
+                shockwave_threshold=shockwave_threshold,
+                rank=rank,
+                max_seq_len=max_seq_len,
+                causal=True,          # enforce time-arrow causality
+            )
+        else:
+            raise ValueError(f"unsupported attention_type: {attention_type}")
         self.norm2 = nn.LayerNorm(dim)
         self.ff    = Rank8_FeedForward(dim, rank)
 
@@ -151,11 +175,20 @@ class H2Q_Evolution_Engine(nn.Module):
         rank: int = 8,
         shockwave_threshold: float = math.pi / 2,
         max_seq_len: int = 2048,
+        attention_type: str = "sta_v2",
+        binary_num_planes: int = 128,
+        binary_chunk_size: int = 64,
+        binary_routing_mode: str = "normalize",
+        binary_backend: str = "packbits",
+        binary_fused_chunk_compute: bool = True,
     ):
         super().__init__()
         self.dim         = dim
         self.num_layers  = num_layers
         self.max_seq_len = max_seq_len
+        self._preferred_binary_backend = binary_backend
+        # Production policy switch: keep training path on stable packbits.
+        self._force_train_packbits = os.environ.get("BINARY_STA_FORCE_TRAIN_PACKBITS", "0") == "1"
 
         # ── Byte embedding: maps each of the 256 byte values to a vector ──────
         self.embedding = nn.Embedding(self.VOCAB, dim)
@@ -168,6 +201,12 @@ class H2Q_Evolution_Engine(nn.Module):
                     rank=rank,
                     shockwave_threshold=shockwave_threshold,
                     max_seq_len=max_seq_len,
+                    attention_type=attention_type,
+                    binary_num_planes=binary_num_planes,
+                    binary_chunk_size=binary_chunk_size,
+                    binary_routing_mode=binary_routing_mode,
+                    binary_backend=binary_backend,
+                    binary_fused_chunk_compute=binary_fused_chunk_compute,
                 )
                 for _ in range(num_layers)
             ]
@@ -182,6 +221,28 @@ class H2Q_Evolution_Engine(nn.Module):
         self.head.weight = self.embedding.weight
 
         self._init_weights()
+        self._apply_backend_policy(training_mode=True)
+
+    def _set_binary_backend(self, backend: str) -> None:
+        for block in self.blocks:
+            attn = getattr(block, "attn", None)
+            if attn is None:
+                continue
+            if hasattr(attn, "binary_backend"):
+                attn.binary_backend = backend
+
+    def _apply_backend_policy(self, training_mode: bool) -> None:
+        if not self._force_train_packbits:
+            return
+        if training_mode:
+            self._set_binary_backend("packbits")
+        else:
+            self._set_binary_backend(self._preferred_binary_backend)
+
+    def train(self, mode: bool = True):
+        out = super().train(mode)
+        self._apply_backend_policy(training_mode=mode)
+        return out
 
     # ── Initialisation ────────────────────────────────────────────────────────
 
@@ -211,12 +272,44 @@ class H2Q_Evolution_Engine(nn.Module):
             logits: [B, L, 256]
             loss:   scalar cross-entropy loss, or None if targets not provided
         """
+        logits, loss, _ = self.forward_features(
+            x,
+            targets=targets,
+            return_hidden_states=False,
+        )
+        return logits, loss
+
+    def forward_features(
+        self,
+        x: torch.Tensor,
+        targets: torch.Tensor = None,
+        return_hidden_states: bool = False,
+    ):
+        """
+        Forward pass with optional hidden-state exposure for research modules.
+
+        This API is additive and does not change the legacy `forward()`
+        behavior, so existing training/eval scripts remain compatible.
+
+        Args:
+            x: [B, L] integer byte indices in [0, 255]
+            targets: optional next-byte targets [B, L]
+            return_hidden_states: when True, return per-block hidden states
+
+        Returns:
+            logits: [B, L, 256]
+            loss: scalar cross-entropy or None
+            features: dict with at least `final_hidden`; optionally `hidden_states`
+        """
         h = self.embedding(x)          # [B, L, dim]
+        hidden_states = []
 
         for block in self.blocks:
             h = block(h)               # [B, L, dim]  (causal, rank-8)
+            if return_hidden_states:
+                hidden_states.append(h)
 
-        h      = self.final_norm(h)    # [B, L, dim]
+        h = self.final_norm(h)         # [B, L, dim]
         logits = self.head(h)          # [B, L, 256]
 
         loss = None
@@ -226,7 +319,11 @@ class H2Q_Evolution_Engine(nn.Module):
                 targets.view(-1),
             )
 
-        return logits, loss
+        features = {"final_hidden": h}
+        if return_hidden_states:
+            features["hidden_states"] = hidden_states
+
+        return logits, loss, features
 
     # ── Topology diagnostics ──────────────────────────────────────────────────
 
@@ -245,7 +342,7 @@ class H2Q_Evolution_Engine(nn.Module):
         Returns:
             float in [0, 1]
         """
-        values = [block.attn.last_sparsity for block in self.blocks]
+        values = [getattr(block.attn, "last_sparsity", 0.0) for block in self.blocks]
         return sum(values) / len(values) if values else 0.0
 
     # ── Utilities ─────────────────────────────────────────────────────────────

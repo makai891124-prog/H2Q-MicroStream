@@ -1,0 +1,64 @@
+{
+  "device": "cuda:0",
+  "config": {
+    "steps": 40,
+    "batch_size": 4,
+    "seq_len": 128,
+    "dim": 128,
+    "layers": 4,
+    "lr": 0.0003,
+    "corpus": "data/open_corpus/open_corpus.txt"
+  },
+  "sta_v2": {
+    "variant": "sta_v2",
+    "attention_type": "sta_v2",
+    "steps": 40,
+    "batch_size": 4,
+    "seq_len": 128,
+    "dim": 128,
+    "layers": 4,
+    "avg_loss": 4.7283093452453615,
+    "last_loss": 3.905693531036377,
+    "loss_min": 3.9018654823303223,
+    "loss_max": 5.586392879486084,
+    "tokens_per_sec": 20206.85185951743,
+    "peak_vram_mb": 39.033203125,
+    "topology_sparsity": 0.0,
+    "generation_text": "The rd}Հr�Y,qRFlh�d�4 -Bbi|� �ts�crt�rT �poJtwn rnm;i.n�e3�c_|t\rb�",
+    "generation_quality": {
+      "invalid_char_rate": 0.0,
+      "repeat_bigram_rate": 0.0461538461538461,
+      "max_run": 1,
+      "readability_score": 0.9438461538461539
+    }
+  },
+  "binary_sta_packbits": {
+    "variant": "binary_sta_packbits",
+    "attention_type": "binary_sta",
+    "steps": 40,
+    "batch_size": 4,
+    "seq_len": 128,
+    "dim": 128,
+    "layers": 4,
+    "avg_loss": 4.500698202848435,
+    "last_loss": 3.8516788482666016,
+    "loss_min": 3.751251459121704,
+    "loss_max": 5.517925262451172,
+    "tokens_per_sec": 44241.90905582936,
+    "peak_vram_mb": 32.88134765625,
+    "topology_sparsity": 0.26492540538311005,
+    "generation_text": "The h{ t r �h TggXv�nnyde&y oy`6n�n:y nu sn�q\u0014k`�sria�w�g rd/b�w��mi",
+    "generation_quality": {
+      "invalid_char_rate": 0.014705882352941176,
+      "repeat_bigram_rate": 0.08955223880597019,
+      "max_run": 2,
+      "readability_score": 0.7875065847234416
+    }
+  },
+  "delta": {
+    "loss_last_binary_minus_sta": -0.05401468276977539,
+    "tokens_per_sec_binary_over_sta": 2.189450853770248,
+    "peak_vram_mb_binary_minus_sta": -6.15185546875,
+    "readability_binary_minus_sta": -0.1563395691227123
+  }
+}

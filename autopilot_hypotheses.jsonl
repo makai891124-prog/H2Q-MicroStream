@@ -1,0 +1,3 @@
+{"status": "proposed", "cycle": 1, "hypothesis_id": "H-EMA-1", "cycle_proposed": 1, "statement": "If high sparsity appears, next cycle EMA minimum should improve by at least 0.05", "check_type": "ema_improve", "baseline": 2.52998054, "threshold": 0.05}
+{"status": "proposed", "cycle": 1, "hypothesis_id": "H-SP-1", "cycle_proposed": 1, "statement": "If SVD entropy stays healthy, next cycle should reach sparsity > 0.5 at least once", "check_type": "sparsity_peak", "baseline": 2.89665654, "threshold": 0.5}
+{"status": "proposed", "cycle": 1, "hypothesis_id": "H-VRAM-1", "cycle_proposed": 1, "statement": "VRAM allocation should remain approximately constant in next cycle", "check_type": "vram_stable", "baseline": 17.4658, "threshold": 1.0}

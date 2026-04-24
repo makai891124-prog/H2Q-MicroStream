@@ -1,0 +1,26 @@
+Analysis Report
+====================
+File: V2 (samples: 59)
+  slope_init: -0.005011872727272732
+  slope_mid: -0.00022419613899613943
+  slope_late: -0.00010575524475524529
+  res_std: 0.24754883880229844
+  norm_volatility: 0.06074669058484418
+  unit_loss_rate: 0.001405206896551724
+  steps_to_4: 400
+  last_loss: 3.1137
+  speed_slope: -0.017465809468147266
+  speed_step_corr: -0.5450964388741375
+  loss_speed_corr: 0.9759045679925514
+  gain_rate: -66.74270926259163
+----------
+File: agi_joint_telemetry.csv (samples: 440)
+  slope_init: -0.00779010765735621
+  slope_mid: -0.0003139577695673945
+  slope_late: 1.5583574019936767e-05
+  res_std: 0.0573923166627616
+  norm_volatility: 0.030941105728030955
+  unit_loss_rate: 0.004225259681093394
+  steps_to_4: 1
+  last_loss: 1.807066
+----------

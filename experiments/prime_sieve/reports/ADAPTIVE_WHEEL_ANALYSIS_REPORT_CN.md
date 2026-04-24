@@ -14,7 +14,7 @@
 
 实验代码文件：
 
-1. [benchmark_prime_algorithms.cpp](benchmark_prime_algorithms.cpp)
+1. `experiments/prime_sieve/src/benchmark_prime_algorithms.cpp`
 
 新增算法：`adaptive_wheel`（分段 + 动态轮基预筛）
 
@@ -53,7 +53,7 @@
 
 ```powershell
 $env:PATH = 'C:\msys64\ucrt64\bin;' + $env:PATH
-& 'd:\H2Q-MicroStream\benchmark_prime_algorithms.exe'
+& 'd:\H2Q-MicroStream\experiments\prime_sieve\benchmark_prime_algorithms.exe'
 ```
 
 说明：

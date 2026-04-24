@@ -1,0 +1,41 @@
+{
+  "model_config": {
+    "dim": 768,
+    "depth": 12,
+    "seq_len": 128,
+    "vocab_size": 256,
+    "rank_factor": 32,
+    "fixed_rank": 8
+  },
+  "training_config": {
+    "batch_size": 24,
+    "lr": 0.0003,
+    "grad_clip": 1.0,
+    "weight_decay": 1e-05,
+    "chunk_size_mb": 10,
+    "supervise_every": 10
+  },
+  "infrastructure": {
+    "device": "cuda:0",
+    "dtype": "float32",
+    "total_chunks_plan": 200000,
+    "checkpoint_every": 1,
+    "eval_every": 1
+  },
+  "baseline_metrics": {
+    "total_chunks_trained": 440,
+    "window_size": 101,
+    "train_loss_\u03bc": 1.7724383366336631,
+    "train_loss_\u03c3": 0.007600228399564359,
+    "val_loss_\u03bc": 1.7872644554455446,
+    "val_loss_\u03c3": 0.029370182125252397,
+    "tokens_per_sec_\u03bc": 18014.445544554455,
+    "tokens_per_sec_\u03c3": 626.736347681344,
+    "vram_alloc_gb": 0.18700000000000008,
+    "gen_gap": 0.01482611881188145,
+    "val_loss_max": 1.8051371,
+    "tokens_per_sec_min": 16213.00099009901,
+    "vram_alloc_max": 0.25,
+    "ortho_loss_max": 12.0
+  }
+}

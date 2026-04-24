@@ -427,7 +427,6 @@ std::uint64_t run_segmented_adaptive_wheel(std::uint32_t limit, std::size_t& mem
             }
         }
 
-        // 轮基素数本身必须保持为素数（预筛模板中会把它们所在同余类写成合数）。
         for (std::uint32_t p : wheel_primes) {
             if (p >= low && p <= high && (p & 1U) == 1U) {
                 composite[static_cast<std::size_t>((p - low) / 2U)] = 0U;
