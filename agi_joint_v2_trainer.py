@@ -103,6 +103,9 @@ try:
 except ImportError:
     _SUPERVISOR_OK = False
 
+from core_compute_codec import CoreTelemetryCSV, compute_core_metrics, to_core_telemetry_path
+from ungs_core import UNGSCore, ungs_total_loss
+
 # ══════════════════════════════════════════════════════════════════════════════
 # §3  设备锁定 (cuda:0 hard-lock)
 # ══════════════════════════════════════════════════════════════════════════════
@@ -125,6 +128,38 @@ CONFIG = {
     "batch_size":   12,      # 24 → 12   (配合更长序列保持 VRAM)
     "dropout_rate": 0.1,
     "axiom_lambda": 0.1,
+
+    # ── 新增: UNGS 核心约束 (Phase A 起步实现) ───────────────────────────────
+    "ungs_enabled": True,
+    "ungs_closure_lambda": 0.05,
+    "ungs_encapsulation_lambda": 0.03,
+    "ungs_self_ref_lambda": 0.02,
+    "ungs_relation_threshold": 0.60,
+    "adaptive_control_enabled": True,
+    "adaptive_control_every": 1,
+    "control_warmup_chunks": 5,
+    "control_curriculum_chunks": 20,
+    "control_warmup_scale": 0.20,
+    "control_val_worse_tolerance": 0.01,
+    "control_val_worse_patience": 2,
+    "control_protection_cooldown": 3,
+    "control_protection_pressure_scale": 0.50,
+    "control_protection_lambda_decay": 0.90,
+    "target_relation_density": 0.08,
+    "target_hierarchy_ratio": 0.03,
+    "target_self_ref_consistency": 0.60,
+    "target_ungs_loss": 0.80,
+    "target_generalization_gap": 0.20,
+    "control_lambda_step": 0.01,
+    "control_axiom_step": 0.01,
+    "control_lr_down": 0.92,
+    "control_lr_up": 1.02,
+    "control_lr_min": 1e-5,
+    "control_lr_max": 1e-3,
+    "ungs_lambda_min": 0.0,
+    "ungs_lambda_max": 0.5,
+    "axiom_lambda_min": 0.01,
+    "axiom_lambda_max": 0.5,
 
     # ── STA-v2 配置 (加速①) ──────────────────────────────────────────────────
     "shockwave_threshold": math.pi / 2,
@@ -168,6 +203,7 @@ CONFIG = {
 
     # ── 评估 ─────────────────────────────────────────────────────────────────
     "eval_window_multiplier": 1000,
+    "seed": 42,
 }
 
 # ══════════════════════════════════════════════════════════════════════════════
@@ -736,6 +772,21 @@ class AGI_V2_Transformer(nn.Module):
 
         self.drop = nn.Dropout(config["dropout_rate"])
 
+        # ── UNGS 核心算子 (单一否定+封装+自指记忆) ───────────────────────────
+        self.ungs_enabled = bool(config.get("ungs_enabled", True))
+        self.ungs_core = (
+            UNGSCore(
+                dim=dim,
+                rank=rank,
+                rel_threshold=float(config.get("ungs_relation_threshold", 0.60)),
+            )
+            if self.ungs_enabled
+            else None
+        )
+        self.ungs_closure_lambda = float(config.get("ungs_closure_lambda", 0.05))
+        self.ungs_encapsulation_lambda = float(config.get("ungs_encapsulation_lambda", 0.03))
+        self.ungs_self_ref_lambda = float(config.get("ungs_self_ref_lambda", 0.02))
+
         # ── 18层交替注意力 + Hamilton FF ─────────────────────────────────────
         self.layers = nn.ModuleList([
             HybridAcceleratedBlock_V2(
@@ -761,6 +812,14 @@ class AGI_V2_Transformer(nn.Module):
 
         self.axiom_lambda = config["axiom_lambda"]
         self._seq_len = seq_len
+        self.ortho_stats_every = max(1, int(os.environ.get("AGI_ORTHO_STATS_EVERY", "1")))
+        self._ortho_stats_calls = 0
+        self._ortho_cache: float = 0.0
+        self._has_ortho_cache = False
+        self._last_ungs_loss: float = 0.0
+        self._last_relation_density: float = 0.0
+        self._last_hierarchy_ratio: float = 0.0
+        self._last_self_ref_consistency: float = 0.0
 
     def forward(
         self,
@@ -775,6 +834,13 @@ class AGI_V2_Transformer(nn.Module):
         pos_emb   = self.pos_enc(T)                     # [1, T, dim]  ⑨
         h = self.drop(tok_emb + padic_emb + pos_emb)    # 三路嵌入叠加
 
+        ungs_losses = {}
+        if self.ungs_enabled and self.ungs_core is not None:
+            h, ungs_losses, ungs_metrics = self.ungs_core(h, compute_losses=(targets is not None))
+            self._last_relation_density = float(ungs_metrics.get("relation_density", 0.0))
+            self._last_hierarchy_ratio = float(ungs_metrics.get("hierarchy_ratio", 0.0))
+            self._last_self_ref_consistency = float(ungs_metrics.get("self_ref_consistency", 0.0))
+
         ortho = torch.tensor(0.0, device=x.device)
         for layer in self.layers:
             h = layer(h)
@@ -786,7 +852,14 @@ class AGI_V2_Transformer(nn.Module):
         loss = None
         if targets is not None:
             ce = F.cross_entropy(logits.reshape(-1, self.VOCAB), targets.reshape(-1))
-            loss = ce + self.axiom_lambda * ortho * 0.01
+            ungs_loss = ungs_total_loss(
+                ungs_losses,
+                closure_lambda=self.ungs_closure_lambda,
+                encapsulation_lambda=self.ungs_encapsulation_lambda,
+                self_ref_lambda=self.ungs_self_ref_lambda,
+            ).to(x.device)
+            self._last_ungs_loss = float(ungs_loss.detach().item())
+            loss = ce + self.axiom_lambda * ortho * 0.01 + ungs_loss
 
         return logits, loss
 
@@ -811,13 +884,28 @@ class AGI_V2_Transformer(nn.Module):
                 tcrh_conn.append(s)
             else:
                 mahler_orders.append(s)
-        with torch.no_grad():
-            ol = sum(l.ortho_loss().item() for l in self.layers)
+
+        self._ortho_stats_calls += 1
+        need_refresh = (
+            (not self._has_ortho_cache)
+            or (self._ortho_stats_calls % self.ortho_stats_every) == 0
+        )
+        if need_refresh:
+            # Expensive path: evaluate all layer orthogonality penalties.
+            with torch.no_grad():
+                self._ortho_cache = float(sum(l.ortho_loss().item() for l in self.layers))
+            self._has_ortho_cache = True
+        ol = self._ortho_cache
+
         return {
             "sta_sparsity_mean":      sum(sta_sp) / max(len(sta_sp), 1),
             "tcrh_conn_mean":         sum(tcrh_conn) / max(len(tcrh_conn), 1),
             "mahler_dominant_order":  sum(mahler_orders) / max(len(mahler_orders), 1),
             "ortho_loss":             ol,
+            "ungs_loss":              self._last_ungs_loss,
+            "relation_density":       self._last_relation_density,
+            "hierarchy_ratio":        self._last_hierarchy_ratio,
+            "self_ref_consistency":   self._last_self_ref_consistency,
         }
 
 
@@ -829,11 +917,18 @@ class AccelTelemetry_V2:
     FIELDS = [
         "timestamp", "chunk", "train_loss", "val_loss",
         "sta_sparsity", "tcrh_connectivity", "mahler_dominant_order",
-        "ortho_loss", "tokens_per_sec", "vram_alloc_gb",
+        "ortho_loss", "ungs_loss", "relation_density", "hierarchy_ratio", "self_ref_consistency",
+        "axiom_residual", "structural_pressure", "lr_dynamic", "axiom_lambda_dynamic",
+        "ungs_closure_lambda_dynamic", "ungs_encapsulation_lambda_dynamic", "ungs_self_ref_lambda_dynamic",
+        "control_phase", "control_phase_scale", "val_worse_streak", "val_protection_active", "val_protection_triggered",
+        "controller_applied",
+        "tokens_per_sec", "vram_alloc_gb",
     ]
 
     def __init__(self, path: str):
         self.path = path
+        self._rows_since_flush = 0
+        self._flush_every = max(1, int(os.environ.get("AGI_TELEMETRY_FLUSH_EVERY", "8")))
         exists = os.path.exists(path)
         self.fp = open(path, "a", newline="", encoding="utf-8")
         self.writer = csv.DictWriter(self.fp, fieldnames=self.FIELDS)
@@ -844,10 +939,15 @@ class AccelTelemetry_V2:
     def write(self, **kwargs):
         row = {f: kwargs.get(f, "") for f in self.FIELDS}
         self.writer.writerow(row)
-        self.fp.flush()
+        self._rows_since_flush += 1
+        if self._rows_since_flush >= self._flush_every:
+            self.fp.flush()
+            self._rows_since_flush = 0
 
     def close(self):
         try:
+            if self._rows_since_flush > 0:
+                self.fp.flush()
             self.fp.close()
         except Exception:
             pass
@@ -882,6 +982,7 @@ class AsyncBufferedLoader:
         self.queue: queue.Queue = queue.Queue(maxsize=3)
         self.stop_event = threading.Event()
         self.buffer_integers: list = []
+        self.pin_memory = torch.cuda.is_available() and os.environ.get("AGI_PIN_MEMORY", "1").strip() == "1"
 
         self.loader_thread = threading.Thread(target=self._background_worker, daemon=True)
         self.loader_thread.start()
@@ -930,6 +1031,8 @@ class AsyncBufferedLoader:
                 self.buffer_integers.extend(b)
                 if len(self.buffer_integers) >= self.chunk_size:
                     t = torch.tensor(self.buffer_integers[: self.chunk_size], dtype=torch.long)
+                    if self.pin_memory:
+                        t = t.pin_memory()
                     self.queue.put(t)
                     self.buffer_integers = self.buffer_integers[self.chunk_size :]
         except Exception as e:
@@ -965,7 +1068,10 @@ class AsyncBufferedLoader:
         valid_len = num_batches * self.batch_size
         if valid_len == 0:
             return self.load_next_chunk()
-        return data[:valid_len].view(self.batch_size, num_batches).contiguous().to(DEVICE)
+        return data[:valid_len].view(self.batch_size, num_batches).contiguous().to(
+            DEVICE,
+            non_blocking=self.pin_memory,
+        )
 
     def decode(self, token_ids: list) -> str:
         valid = bytes([i for i in token_ids if 0 < i < 256])
@@ -997,6 +1103,214 @@ def sanitize_state(sd: dict) -> dict:
 
 def count_params(model: nn.Module) -> int:
     return sum(p.numel() for p in model.parameters())
+
+
+def set_global_seed(seed: int) -> None:
+    random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed_all(seed)
+
+
+class AxiomResidualController:
+    """Online controller that maps emergence residuals back to training hyperparameters."""
+
+    def __init__(self, cfg: dict):
+        self.enabled = bool(cfg.get("adaptive_control_enabled", True))
+        self.every = max(1, int(cfg.get("adaptive_control_every", 1)))
+        self.warmup_chunks = max(0, int(cfg.get("control_warmup_chunks", 5)))
+        self.curriculum_chunks = max(1, int(cfg.get("control_curriculum_chunks", 20)))
+        self.warmup_scale = float(cfg.get("control_warmup_scale", 0.20))
+        self.val_worse_tolerance = float(cfg.get("control_val_worse_tolerance", 0.01))
+        self.val_worse_patience = max(1, int(cfg.get("control_val_worse_patience", 2)))
+        self.protection_cooldown = max(1, int(cfg.get("control_protection_cooldown", 3)))
+        self.protection_pressure_scale = float(cfg.get("control_protection_pressure_scale", 0.50))
+        self.protection_lambda_decay = float(cfg.get("control_protection_lambda_decay", 0.90))
+        self.target_relation_density = float(cfg.get("target_relation_density", 0.08))
+        self.target_hierarchy_ratio = float(cfg.get("target_hierarchy_ratio", 0.03))
+        self.target_self_ref_consistency = float(cfg.get("target_self_ref_consistency", 0.60))
+        self.target_ungs_loss = float(cfg.get("target_ungs_loss", 0.80))
+        self.target_generalization_gap = float(cfg.get("target_generalization_gap", 0.20))
+        self.lambda_step = float(cfg.get("control_lambda_step", 0.01))
+        self.axiom_step = float(cfg.get("control_axiom_step", 0.01))
+        self.lr_down = float(cfg.get("control_lr_down", 0.92))
+        self.lr_up = float(cfg.get("control_lr_up", 1.02))
+        self.lr_min = float(cfg.get("control_lr_min", 1e-5))
+        self.lr_max = float(cfg.get("control_lr_max", 1e-3))
+        self.ungs_lambda_min = float(cfg.get("ungs_lambda_min", 0.0))
+        self.ungs_lambda_max = float(cfg.get("ungs_lambda_max", 0.5))
+        self.axiom_lambda_min = float(cfg.get("axiom_lambda_min", 0.01))
+        self.axiom_lambda_max = float(cfg.get("axiom_lambda_max", 0.5))
+
+        self.prev_val_loss: float | None = None
+        self.val_worse_streak = 0
+        self.protection_left = 0
+
+    def _phase(self, chunk_counter: int) -> tuple[int, float]:
+        if chunk_counter <= self.warmup_chunks:
+            return 0, self.warmup_scale
+        after_warmup = chunk_counter - self.warmup_chunks
+        if after_warmup <= self.curriculum_chunks:
+            p = after_warmup / max(1, self.curriculum_chunks)
+            return 1, self.warmup_scale + (1.0 - self.warmup_scale) * p
+        return 2, 1.0
+
+    def _update_val_worse(self, avg_val: float) -> bool:
+        triggered = False
+        if self.prev_val_loss is not None:
+            if avg_val > self.prev_val_loss * (1.0 + self.val_worse_tolerance):
+                self.val_worse_streak += 1
+            else:
+                self.val_worse_streak = 0
+            if self.val_worse_streak >= self.val_worse_patience:
+                self.protection_left = self.protection_cooldown
+                self.val_worse_streak = 0
+                triggered = True
+        self.prev_val_loss = avg_val
+        return triggered
+
+    def _clip(self, x: float, lo: float, hi: float) -> float:
+        return max(lo, min(hi, x))
+
+    def compute_residual(self, stats: dict, avg_train: float, avg_val: float) -> float:
+        rel_gap = max(0.0, self.target_relation_density - float(stats.get("relation_density", 0.0)))
+        hier_gap = max(0.0, self.target_hierarchy_ratio - float(stats.get("hierarchy_ratio", 0.0)))
+        self_ref_gap = max(
+            0.0,
+            self.target_self_ref_consistency - float(stats.get("self_ref_consistency", 0.0)),
+        )
+        ungs_gap = max(0.0, float(stats.get("ungs_loss", 0.0)) - self.target_ungs_loss)
+        gen_gap_raw = max(0.0, (avg_val - avg_train) - self.target_generalization_gap)
+        gen_gap = gen_gap_raw / 10.0
+        parts = [rel_gap, hier_gap, self_ref_gap, ungs_gap, gen_gap]
+        return float(sum(parts) / len(parts))
+
+    def apply(
+        self,
+        *,
+        model: AGI_V2_Transformer,
+        optimizer: torch.optim.Optimizer,
+        residual: float,
+        chunk_counter: int,
+        avg_val: float,
+    ) -> dict:
+        curr_lr = float(optimizer.param_groups[0]["lr"])
+        phase_id, phase_scale = self._phase(chunk_counter)
+        protection_triggered = self._update_val_worse(avg_val)
+        protection_active = self.protection_left > 0
+        if (not self.enabled) or (chunk_counter % self.every != 0):
+            return {
+                "axiom_residual": residual,
+                "structural_pressure": 1.0 * phase_scale,
+                "lr_dynamic": curr_lr,
+                "axiom_lambda_dynamic": float(model.axiom_lambda),
+                "ungs_closure_lambda_dynamic": float(model.ungs_closure_lambda),
+                "ungs_encapsulation_lambda_dynamic": float(model.ungs_encapsulation_lambda),
+                "ungs_self_ref_lambda_dynamic": float(model.ungs_self_ref_lambda),
+                "controller_applied": 0.0,
+                "control_phase": float(phase_id),
+                "control_phase_scale": phase_scale,
+                "val_worse_streak": float(self.val_worse_streak),
+                "val_protection_active": float(1 if protection_active else 0),
+                "val_protection_triggered": float(1 if protection_triggered else 0),
+            }
+
+        high = residual > 0.10
+        structural_pressure = (1.0 + min(1.0, residual * 3.0)) * phase_scale
+
+        if protection_active:
+            structural_pressure *= self.protection_pressure_scale
+
+        if high:
+            model.ungs_closure_lambda = self._clip(
+                model.ungs_closure_lambda + self.lambda_step * structural_pressure,
+                self.ungs_lambda_min,
+                self.ungs_lambda_max,
+            )
+            model.ungs_encapsulation_lambda = self._clip(
+                model.ungs_encapsulation_lambda + self.lambda_step * 0.8 * structural_pressure,
+                self.ungs_lambda_min,
+                self.ungs_lambda_max,
+            )
+            model.ungs_self_ref_lambda = self._clip(
+                model.ungs_self_ref_lambda + self.lambda_step * 0.6 * structural_pressure,
+                self.ungs_lambda_min,
+                self.ungs_lambda_max,
+            )
+            model.axiom_lambda = self._clip(
+                model.axiom_lambda + self.axiom_step * structural_pressure,
+                self.axiom_lambda_min,
+                self.axiom_lambda_max,
+            )
+            new_lr = self._clip(curr_lr * self.lr_down, self.lr_min, self.lr_max)
+        else:
+            model.ungs_closure_lambda = self._clip(
+                model.ungs_closure_lambda - self.lambda_step * 0.5,
+                self.ungs_lambda_min,
+                self.ungs_lambda_max,
+            )
+            model.ungs_encapsulation_lambda = self._clip(
+                model.ungs_encapsulation_lambda - self.lambda_step * 0.4,
+                self.ungs_lambda_min,
+                self.ungs_lambda_max,
+            )
+            model.ungs_self_ref_lambda = self._clip(
+                model.ungs_self_ref_lambda - self.lambda_step * 0.3,
+                self.ungs_lambda_min,
+                self.ungs_lambda_max,
+            )
+            model.axiom_lambda = self._clip(
+                model.axiom_lambda - self.axiom_step * 0.3,
+                self.axiom_lambda_min,
+                self.axiom_lambda_max,
+            )
+            new_lr = self._clip(curr_lr * self.lr_up, self.lr_min, self.lr_max)
+
+        if protection_active:
+            model.ungs_closure_lambda = self._clip(
+                model.ungs_closure_lambda * self.protection_lambda_decay,
+                self.ungs_lambda_min,
+                self.ungs_lambda_max,
+            )
+            model.ungs_encapsulation_lambda = self._clip(
+                model.ungs_encapsulation_lambda * self.protection_lambda_decay,
+                self.ungs_lambda_min,
+                self.ungs_lambda_max,
+            )
+            model.ungs_self_ref_lambda = self._clip(
+                model.ungs_self_ref_lambda * self.protection_lambda_decay,
+                self.ungs_lambda_min,
+                self.ungs_lambda_max,
+            )
+            model.axiom_lambda = self._clip(
+                model.axiom_lambda * self.protection_lambda_decay,
+                self.axiom_lambda_min,
+                self.axiom_lambda_max,
+            )
+            # During protection we avoid over-constraining; ease lr decay.
+            new_lr = self._clip(max(new_lr, curr_lr), self.lr_min, self.lr_max)
+
+        if self.protection_left > 0:
+            self.protection_left -= 1
+
+        for pg in optimizer.param_groups:
+            pg["lr"] = new_lr
+
+        return {
+            "axiom_residual": residual,
+            "structural_pressure": structural_pressure,
+            "lr_dynamic": new_lr,
+            "axiom_lambda_dynamic": float(model.axiom_lambda),
+            "ungs_closure_lambda_dynamic": float(model.ungs_closure_lambda),
+            "ungs_encapsulation_lambda_dynamic": float(model.ungs_encapsulation_lambda),
+            "ungs_self_ref_lambda_dynamic": float(model.ungs_self_ref_lambda),
+            "controller_applied": 1.0,
+            "control_phase": float(phase_id),
+            "control_phase_scale": phase_scale,
+            "val_worse_streak": float(self.val_worse_streak),
+            "val_protection_active": float(1 if protection_active else 0),
+            "val_protection_triggered": float(1 if protection_triggered else 0),
+        }
 
 
 def print_boot_banner(model: AGI_V2_Transformer, cfg: dict):
@@ -1034,6 +1348,13 @@ def print_boot_banner(model: AGI_V2_Transformer, cfg: dict):
     print(f"    [10] P-adic Emb   2-进字节结构嵌入  precision={cfg['padic_precision']}位")
     print(f"    [11] MahlerDiff   因果后向差分层  max_order={cfg['mahler_diff_order']}  ({n_mahler} 层)")
     print(f"    [12] Primorial LSH 素数谐波投影  prime_blend={cfg['prime_blend']}")
+    print(
+        "    [UNGS] 单一否定生成 core="
+        f"{cfg['ungs_enabled']} ("
+        f"closure={cfg['ungs_closure_lambda']}, "
+        f"encap={cfg['ungs_encapsulation_lambda']}, "
+        f"self_ref={cfg['ungs_self_ref_lambda']})"
+    )
     print("=" * 90)
     print()
 
@@ -1043,18 +1364,26 @@ def print_boot_banner(model: AGI_V2_Transformer, cfg: dict):
 # ══════════════════════════════════════════════════════════════════════════════
 
 def train_joint_v2(cfg: dict):
+    set_global_seed(int(cfg.get("seed", 42)))
     resume_file_index = 0
     chunk_counter     = 0
     best_loss         = float("inf")
 
     # ── 模型初始化 ──────────────────────────────────────────────────────────
     model = AGI_V2_Transformer(cfg).to(DEVICE)
+    controller = AxiomResidualController(cfg)
 
-    opt = torch.optim.AdamW(
-        model.parameters(),
-        lr=cfg["lr"],
-        weight_decay=cfg["weight_decay"],
-    )
+    adamw_kwargs = {
+        "lr": cfg["lr"],
+        "weight_decay": cfg["weight_decay"],
+    }
+    if DEVICE.type == "cuda":
+        adamw_kwargs["fused"] = True
+    try:
+        opt = torch.optim.AdamW(model.parameters(), **adamw_kwargs)
+    except TypeError:
+        adamw_kwargs.pop("fused", None)
+        opt = torch.optim.AdamW(model.parameters(), **adamw_kwargs)
 
     # ── 恢复检查点 ──────────────────────────────────────────────────────────
     ckpt_path = cfg["checkpoint_path"]
@@ -1062,7 +1391,11 @@ def train_joint_v2(cfg: dict):
         print(f"[Train] 恢复存档: {ckpt_path}")
         try:
             ckpt = torch.load(ckpt_path, map_location=DEVICE, weights_only=False)
-            model.load_state_dict(sanitize_state(ckpt["model"]))
+            load_result = model.load_state_dict(sanitize_state(ckpt["model"]), strict=False)
+            if load_result.missing_keys:
+                print(f"[Train] state_dict missing_keys={len(load_result.missing_keys)} (UNGS扩展后可预期)")
+            if load_result.unexpected_keys:
+                print(f"[Train] state_dict unexpected_keys={len(load_result.unexpected_keys)}")
             opt.load_state_dict(ckpt["optimizer"])
             chunk_counter     = ckpt.get("chunk_counter", 0)
             best_loss         = ckpt.get("best_loss", float("inf"))
@@ -1102,6 +1435,7 @@ def train_joint_v2(cfg: dict):
 
     # ── 遥测 ────────────────────────────────────────────────────────────────
     telemetry = AccelTelemetry_V2(cfg["telemetry_csv"])
+    core_telemetry = CoreTelemetryCSV(to_core_telemetry_path(cfg["telemetry_csv"]))
 
     print("[Train] 等待初始数据 ...")
     current_data = loader.load_next_chunk()
@@ -1180,8 +1514,17 @@ def train_joint_v2(cfg: dict):
             current_data = future_data
             chunk_counter += 1
 
-            # ── 加速统计 ───────────────────────────────────────────────────
+            # ── 加速统计 + 闭环控制 ───────────────────────────────────────
             stats = model.accel_stats()
+            residual = controller.compute_residual(stats, avg_train=avg_train, avg_val=avg_val)
+            ctrl = controller.apply(
+                model=model,
+                optimizer=opt,
+                residual=residual,
+                chunk_counter=chunk_counter,
+                avg_val=avg_val,
+            )
+            stats.update(ctrl)
             total_time = time.time() - t0
 
             print(
@@ -1191,16 +1534,35 @@ def train_joint_v2(cfg: dict):
                 f"  STA稀疏率={stats['sta_sparsity_mean']*100:.1f}%  "
                 f"TCRH连通率={stats['tcrh_conn_mean']*100:.1f}%  "
                 f"Mahler主导阶={stats['mahler_dominant_order']:.1f}  "
-                f"ortho={stats['ortho_loss']:.3f}\n"
+                f"ortho={stats['ortho_loss']:.3f}  UNGS={stats['ungs_loss']:.4f}\n"
+                f"  关系密度={stats['relation_density']:.4f}  "
+                f"层级压缩比={stats['hierarchy_ratio']:.4f}  "
+                f"自指一致性={stats['self_ref_consistency']:.4f}\n"
+                f"  残差={stats['axiom_residual']:.4f}  "
+                f"压力={stats['structural_pressure']:.3f}  "
+                f"lr={stats['lr_dynamic']:.6f}  "
+                f"axiomλ={stats['axiom_lambda_dynamic']:.4f}  "
+                f"phase={int(stats['control_phase'])}({stats['control_phase_scale']:.2f})  "
+                f"protect={int(stats['val_protection_active'])}\n"
                 f"  速度={int(tokens_per_sec)} tok/s  "
                 f"VRAM={get_vram_gb():.2f}GB  "
                 f"时间={total_time:.1f}s  "
                 f"文件索引={loader.get_bookmark()}"
             )
 
+            core_metrics = compute_core_metrics(
+                train_loss=avg_train,
+                val_loss=avg_val,
+                ortho_loss=float(stats["ortho_loss"]),
+                tokens_per_sec=tokens_per_sec,
+                axiom_lambda=float(model.axiom_lambda),
+                stats=stats,
+            )
+            ts = datetime.utcnow().isoformat() + "Z"
+
             # ── 遥测写入 ───────────────────────────────────────────────────
             telemetry.write(
-                timestamp=datetime.utcnow().isoformat() + "Z",
+                timestamp=ts,
                 chunk=chunk_counter,
                 train_loss=f"{avg_train:.6f}",
                 val_loss=f"{avg_val:.6f}",
@@ -1208,9 +1570,27 @@ def train_joint_v2(cfg: dict):
                 tcrh_connectivity=f"{stats['tcrh_conn_mean']:.4f}",
                 mahler_dominant_order=f"{stats['mahler_dominant_order']:.2f}",
                 ortho_loss=f"{stats['ortho_loss']:.4f}",
+                ungs_loss=f"{stats['ungs_loss']:.6f}",
+                relation_density=f"{stats['relation_density']:.6f}",
+                hierarchy_ratio=f"{stats['hierarchy_ratio']:.6f}",
+                self_ref_consistency=f"{stats['self_ref_consistency']:.6f}",
+                axiom_residual=f"{stats['axiom_residual']:.6f}",
+                structural_pressure=f"{stats['structural_pressure']:.6f}",
+                lr_dynamic=f"{stats['lr_dynamic']:.8f}",
+                axiom_lambda_dynamic=f"{stats['axiom_lambda_dynamic']:.6f}",
+                ungs_closure_lambda_dynamic=f"{stats['ungs_closure_lambda_dynamic']:.6f}",
+                ungs_encapsulation_lambda_dynamic=f"{stats['ungs_encapsulation_lambda_dynamic']:.6f}",
+                ungs_self_ref_lambda_dynamic=f"{stats['ungs_self_ref_lambda_dynamic']:.6f}",
+                control_phase=f"{stats['control_phase']:.0f}",
+                control_phase_scale=f"{stats['control_phase_scale']:.6f}",
+                val_worse_streak=f"{stats['val_worse_streak']:.0f}",
+                val_protection_active=f"{stats['val_protection_active']:.0f}",
+                val_protection_triggered=f"{stats['val_protection_triggered']:.0f}",
+                controller_applied=f"{stats['controller_applied']:.0f}",
                 tokens_per_sec=f"{tokens_per_sec:.0f}",
                 vram_alloc_gb=f"{get_vram_gb():.3f}",
             )
+            core_telemetry.write(timestamp=ts, chunk=chunk_counter, metrics=core_metrics)
 
             # ── 检查点保存 ─────────────────────────────────────────────────
             if avg_val < best_loss:
@@ -1276,6 +1656,7 @@ def train_joint_v2(cfg: dict):
             print("[Train] 紧急保存失败")
         loader.stop()
         telemetry.close()
+        core_telemetry.close()
         print(
             f"\n[Train] V2 完成 — chunk={chunk_counter}, best_loss={best_loss:.4f}, "
             f"VRAM={get_vram_gb():.2f}GB"
@@ -1309,6 +1690,36 @@ def build_parser() -> argparse.ArgumentParser:
     p.add_argument("--telemetry-csv",   type=str, default=CONFIG["telemetry_csv"])
     p.add_argument("--shockwave-threshold", type=float, default=CONFIG["shockwave_threshold"])
     p.add_argument("--hash-dim",     type=int,   default=CONFIG["hash_dim"])
+    p.add_argument("--ungs-enabled", type=int, default=int(CONFIG["ungs_enabled"]))
+    p.add_argument("--ungs-closure-lambda", type=float, default=CONFIG["ungs_closure_lambda"])
+    p.add_argument("--ungs-encapsulation-lambda", type=float, default=CONFIG["ungs_encapsulation_lambda"])
+    p.add_argument("--ungs-self-ref-lambda", type=float, default=CONFIG["ungs_self_ref_lambda"])
+    p.add_argument("--ungs-relation-threshold", type=float, default=CONFIG["ungs_relation_threshold"])
+    p.add_argument("--adaptive-control-enabled", type=int, default=int(CONFIG["adaptive_control_enabled"]))
+    p.add_argument("--adaptive-control-every", type=int, default=CONFIG["adaptive_control_every"])
+    p.add_argument("--control-warmup-chunks", type=int, default=CONFIG["control_warmup_chunks"])
+    p.add_argument("--control-curriculum-chunks", type=int, default=CONFIG["control_curriculum_chunks"])
+    p.add_argument("--control-warmup-scale", type=float, default=CONFIG["control_warmup_scale"])
+    p.add_argument("--control-val-worse-tolerance", type=float, default=CONFIG["control_val_worse_tolerance"])
+    p.add_argument("--control-val-worse-patience", type=int, default=CONFIG["control_val_worse_patience"])
+    p.add_argument("--control-protection-cooldown", type=int, default=CONFIG["control_protection_cooldown"])
+    p.add_argument("--control-protection-pressure-scale", type=float, default=CONFIG["control_protection_pressure_scale"])
+    p.add_argument("--control-protection-lambda-decay", type=float, default=CONFIG["control_protection_lambda_decay"])
+    p.add_argument("--target-relation-density", type=float, default=CONFIG["target_relation_density"])
+    p.add_argument("--target-hierarchy-ratio", type=float, default=CONFIG["target_hierarchy_ratio"])
+    p.add_argument("--target-self-ref-consistency", type=float, default=CONFIG["target_self_ref_consistency"])
+    p.add_argument("--target-ungs-loss", type=float, default=CONFIG["target_ungs_loss"])
+    p.add_argument("--target-generalization-gap", type=float, default=CONFIG["target_generalization_gap"])
+    p.add_argument("--control-lambda-step", type=float, default=CONFIG["control_lambda_step"])
+    p.add_argument("--control-axiom-step", type=float, default=CONFIG["control_axiom_step"])
+    p.add_argument("--control-lr-down", type=float, default=CONFIG["control_lr_down"])
+    p.add_argument("--control-lr-up", type=float, default=CONFIG["control_lr_up"])
+    p.add_argument("--control-lr-min", type=float, default=CONFIG["control_lr_min"])
+    p.add_argument("--control-lr-max", type=float, default=CONFIG["control_lr_max"])
+    p.add_argument("--ungs-lambda-min", type=float, default=CONFIG["ungs_lambda_min"])
+    p.add_argument("--ungs-lambda-max", type=float, default=CONFIG["ungs_lambda_max"])
+    p.add_argument("--axiom-lambda-min", type=float, default=CONFIG["axiom_lambda_min"])
+    p.add_argument("--axiom-lambda-max", type=float, default=CONFIG["axiom_lambda_max"])
     p.add_argument("--num-buckets",  type=int,   default=CONFIG["num_buckets"])
     p.add_argument("--hamming-thresh", type=int, default=CONFIG["hamming_thresh"])
     # V2 新增参数
@@ -1320,6 +1731,7 @@ def build_parser() -> argparse.ArgumentParser:
                    help="P-进字节嵌入位数 (建议8)")
     p.add_argument("--mahler-diff-order", type=int, default=CONFIG["mahler_diff_order"],
                    help="Mahler差分层最大阶数")
+    p.add_argument("--seed", type=int, default=CONFIG["seed"])
     return p
 
 
@@ -1343,6 +1755,36 @@ def main():
         "telemetry_csv":          args.telemetry_csv,
         "shockwave_threshold":    args.shockwave_threshold,
         "hash_dim":               args.hash_dim,
+        "ungs_enabled":           bool(args.ungs_enabled),
+        "ungs_closure_lambda":    args.ungs_closure_lambda,
+        "ungs_encapsulation_lambda": args.ungs_encapsulation_lambda,
+        "ungs_self_ref_lambda":   args.ungs_self_ref_lambda,
+        "ungs_relation_threshold": args.ungs_relation_threshold,
+        "adaptive_control_enabled": bool(args.adaptive_control_enabled),
+        "adaptive_control_every": args.adaptive_control_every,
+        "control_warmup_chunks": args.control_warmup_chunks,
+        "control_curriculum_chunks": args.control_curriculum_chunks,
+        "control_warmup_scale": args.control_warmup_scale,
+        "control_val_worse_tolerance": args.control_val_worse_tolerance,
+        "control_val_worse_patience": args.control_val_worse_patience,
+        "control_protection_cooldown": args.control_protection_cooldown,
+        "control_protection_pressure_scale": args.control_protection_pressure_scale,
+        "control_protection_lambda_decay": args.control_protection_lambda_decay,
+        "target_relation_density": args.target_relation_density,
+        "target_hierarchy_ratio": args.target_hierarchy_ratio,
+        "target_self_ref_consistency": args.target_self_ref_consistency,
+        "target_ungs_loss": args.target_ungs_loss,
+        "target_generalization_gap": args.target_generalization_gap,
+        "control_lambda_step": args.control_lambda_step,
+        "control_axiom_step": args.control_axiom_step,
+        "control_lr_down": args.control_lr_down,
+        "control_lr_up": args.control_lr_up,
+        "control_lr_min": args.control_lr_min,
+        "control_lr_max": args.control_lr_max,
+        "ungs_lambda_min": args.ungs_lambda_min,
+        "ungs_lambda_max": args.ungs_lambda_max,
+        "axiom_lambda_min": args.axiom_lambda_min,
+        "axiom_lambda_max": args.axiom_lambda_max,
         "num_buckets":            args.num_buckets,
         "hamming_thresh":         args.hamming_thresh,
         # V2 新增
@@ -1350,6 +1792,7 @@ def main():
         "mahler_basis_order":     args.mahler_basis_order,
         "padic_precision":        args.padic_precision,
         "mahler_diff_order":      args.mahler_diff_order,
+        "seed":                   args.seed,
     })
     train_joint_v2(cfg)
 

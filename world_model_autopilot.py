@@ -17,6 +17,7 @@ from __future__ import annotations
 import argparse
 import csv
 import json
+import math
 import os
 import statistics
 import subprocess
@@ -37,6 +38,11 @@ class CycleMetrics:
     svd_entropy_last: float
     vram_mb_last: float
     phase_trigger_like: bool
+    relation_density_last10: float
+    hierarchy_ratio_last10: float
+    self_ref_consistency_last10: float
+    ungs_loss_last10: float
+    axiom_residual: float
 
 @dataclass
 class HypothesisRecord:
@@ -113,6 +119,21 @@ def to_float(v: str) -> float:
         return float("nan")
 
 
+def pick_float(row: dict, keys: List[str]) -> float:
+    for k in keys:
+        if k in row and row.get(k, "") != "":
+            return to_float(row.get(k, "nan"))
+    return float("nan")
+
+
+def finite_mean(values: List[float], tail: int = 10) -> float:
+    finite = [v for v in values if not math.isnan(v)]
+    if not finite:
+        return float("nan")
+    k = min(len(finite), max(1, tail))
+    return statistics.fmean(finite[-k:])
+
+
 def analyze_cycle(cycle_id: int, rows: List[dict]) -> CycleMetrics:
     if not rows:
         return CycleMetrics(
@@ -125,17 +146,57 @@ def analyze_cycle(cycle_id: int, rows: List[dict]) -> CycleMetrics:
             svd_entropy_last=float("nan"),
             vram_mb_last=float("nan"),
             phase_trigger_like=False,
+            relation_density_last10=float("nan"),
+            hierarchy_ratio_last10=float("nan"),
+            self_ref_consistency_last10=float("nan"),
+            ungs_loss_last10=float("nan"),
+            axiom_residual=float("nan"),
         )
 
-    ema = [to_float(x["Causal_Loss_EMA"]) for x in rows]
-    sp = [to_float(x["Topology_Sparsity"]) for x in rows]
-    svd = [to_float(x["SVD_Entropy"]) for x in rows]
-    vram = [to_float(x["VRAM_Allocated_MB"]) for x in rows]
-    steps = [int(float(x["T_Step"])) for x in rows]
+    ema = [pick_float(x, ["Causal_Loss_EMA", "val_loss"]) for x in rows]
+    sp = [pick_float(x, ["Topology_Sparsity", "sta_sparsity"]) for x in rows]
+    svd = [pick_float(x, ["SVD_Entropy"]) for x in rows]
+    vram = []
+    for x in rows:
+        vram_mb = pick_float(x, ["VRAM_Allocated_MB"])
+        if math.isnan(vram_mb):
+            vram_gb = pick_float(x, ["vram_alloc_gb"])
+            vram_mb = vram_gb * 1024.0 if not math.isnan(vram_gb) else float("nan")
+        vram.append(vram_mb)
+    rel = [pick_float(x, ["relation_density"]) for x in rows]
+    hier = [pick_float(x, ["hierarchy_ratio"]) for x in rows]
+    self_ref = [pick_float(x, ["self_ref_consistency"]) for x in rows]
+    ungs = [pick_float(x, ["ungs_loss"]) for x in rows]
+    step_vals = [pick_float(x, ["T_Step", "chunk"]) for x in rows]
+    steps = [int(v) for v in step_vals if not math.isnan(v)]
+    if not steps:
+        steps = [len(rows)]
 
     k = min(10, len(sp))
     mean_last_k = statistics.fmean(sp[-k:]) if k > 0 else float("nan")
     phase_like = (min(ema) < ema[0]) and (max(sp) > 0.5)
+
+    rel_last10 = finite_mean(rel, 10)
+    hier_last10 = finite_mean(hier, 10)
+    self_ref_last10 = finite_mean(self_ref, 10)
+    ungs_last10 = finite_mean(ungs, 10)
+
+    # Axiom residual: lower is better.
+    residual_terms = []
+    if not math.isnan(rel_last10):
+        residual_terms.append(max(0.0, 0.08 - rel_last10))
+    else:
+        residual_terms.append(max(0.0, 0.5 - max(sp)))
+    if not math.isnan(hier_last10):
+        residual_terms.append(max(0.0, 0.03 - hier_last10))
+    else:
+        residual_terms.append(max(0.0, 1.6 - (svd[-1] if svd else 0.0)) / 10.0)
+    if not math.isnan(self_ref_last10):
+        residual_terms.append(max(0.0, 0.60 - self_ref_last10))
+    if not math.isnan(ungs_last10):
+        residual_terms.append(max(0.0, ungs_last10 - 0.80))
+
+    axiom_residual = sum(residual_terms) / max(len(residual_terms), 1)
 
     return CycleMetrics(
         cycle_id=cycle_id,
@@ -147,23 +208,45 @@ def analyze_cycle(cycle_id: int, rows: List[dict]) -> CycleMetrics:
         svd_entropy_last=svd[-1],
         vram_mb_last=vram[-1],
         phase_trigger_like=phase_like,
+        relation_density_last10=rel_last10,
+        hierarchy_ratio_last10=hier_last10,
+        self_ref_consistency_last10=self_ref_last10,
+        ungs_loss_last10=ungs_last10,
+        axiom_residual=axiom_residual,
     )
 
 
 def next_policy(prev_lr: float, metric: CycleMetrics) -> dict:
-    # Simple self-correction policy:
-    # - if topology sparsity remains low, increase structural pressure by reducing LR slightly
-    # - if entropy collapses too much, relax by increasing LR slightly
-    lr = prev_lr
-    if metric.sparsity_max < 0.2:
-        lr = max(1e-5, prev_lr * 0.85)
-    elif metric.svd_entropy_last < 1.6:
-        lr = min(1e-3, prev_lr * 1.1)
+    # Axiom-residual-driven policy:
+    # residual high -> reduce lr and increase structural pressure.
+    # residual low  -> cautiously relax lr to avoid over-regularization.
+    residual = metric.axiom_residual
+    if math.isnan(residual):
+        residual = 0.5
+
+    if residual > 0.25:
+        lr = max(1e-5, prev_lr * 0.82)
+    elif residual > 0.10:
+        lr = max(1e-5, prev_lr * 0.92)
+    else:
+        lr = min(1e-3, prev_lr * 1.03)
+
+    structural_pressure = min(2.0, 1.0 + 2.0 * residual)
+    ungs_closure_lambda = min(0.5, 0.05 + 0.08 * residual)
+    ungs_encapsulation_lambda = min(0.5, 0.03 + 0.06 * residual)
+    ungs_self_ref_lambda = min(0.5, 0.02 + 0.05 * residual)
+    axiom_lambda = min(0.5, 0.10 + 0.10 * residual)
 
     return {
         "lr": lr,
-        "target_sparsity": 0.5,
+        "target_axiom_residual": 0.10,
+        "structural_pressure": structural_pressure,
+        "suggest_ungs_closure_lambda": ungs_closure_lambda,
+        "suggest_ungs_encapsulation_lambda": ungs_encapsulation_lambda,
+        "suggest_ungs_self_ref_lambda": ungs_self_ref_lambda,
+        "suggest_axiom_lambda": axiom_lambda,
         "phase_trigger_like": metric.phase_trigger_like,
+        "policy_mode": "axiom_residual_driven",
     }
 
 def generate_hypotheses(metric: CycleMetrics) -> List[dict]:
@@ -171,23 +254,23 @@ def generate_hypotheses(metric: CycleMetrics) -> List[dict]:
 
     hyps.append(
         {
-            "hypothesis_id": f"H-EMA-{metric.cycle_id}",
+            "hypothesis_id": f"H-AXRES-{metric.cycle_id}",
             "cycle_proposed": metric.cycle_id,
-            "statement": "If high sparsity appears, next cycle EMA minimum should improve by at least 0.05",
-            "check_type": "ema_improve",
-            "baseline": metric.ema_min,
-            "threshold": 0.05,
+            "statement": "If policy is residual-driven, next cycle axiom_residual should drop by at least 0.03",
+            "check_type": "residual_drop",
+            "baseline": metric.axiom_residual,
+            "threshold": 0.03,
         }
     )
 
     hyps.append(
         {
-            "hypothesis_id": f"H-SP-{metric.cycle_id}",
+            "hypothesis_id": f"H-SREF-{metric.cycle_id}",
             "cycle_proposed": metric.cycle_id,
-            "statement": "If SVD entropy stays healthy, next cycle should reach sparsity > 0.5 at least once",
-            "check_type": "sparsity_peak",
-            "baseline": metric.svd_entropy_last,
-            "threshold": 0.5,
+            "statement": "Self-reference consistency should improve by at least 0.02",
+            "check_type": "self_ref_improve",
+            "baseline": metric.self_ref_consistency_last10,
+            "threshold": 0.02,
         }
     )
 
@@ -220,6 +303,14 @@ def validate_hypotheses(pending: List[dict], metric: CycleMetrics) -> List[Hypot
             delta = baseline - metric.ema_min
             status = "supported" if delta >= threshold else "falsified"
             evidence = f"baseline_ema_min={baseline:.6f}, next_ema_min={metric.ema_min:.6f}, delta={delta:.6f}"
+        elif c == "residual_drop":
+            delta = baseline - metric.axiom_residual
+            status = "supported" if delta >= threshold else "falsified"
+            evidence = f"baseline_residual={baseline:.6f}, next_residual={metric.axiom_residual:.6f}, delta={delta:.6f}"
+        elif c == "self_ref_improve":
+            delta = metric.self_ref_consistency_last10 - baseline
+            status = "supported" if delta >= threshold else "falsified"
+            evidence = f"baseline_self_ref={baseline:.6f}, next_self_ref={metric.self_ref_consistency_last10:.6f}, delta={delta:.6f}"
         elif c == "sparsity_peak":
             status = "supported" if metric.sparsity_max > threshold else "falsified"
             evidence = f"next_sparsity_max={metric.sparsity_max:.6f}, threshold={threshold:.6f}"
@@ -264,6 +355,11 @@ def append_report(
         f"- Sparsity mean(last10): {metric.sparsity_mean_last10:.4f}",
         f"- SVD entropy(last): {metric.svd_entropy_last:.4f}",
         f"- VRAM MB(last): {metric.vram_mb_last:.4f}",
+        f"- Axiom residual(last10): {metric.axiom_residual:.6f}",
+        f"- Relation density(last10): {metric.relation_density_last10:.6f}",
+        f"- Hierarchy ratio(last10): {metric.hierarchy_ratio_last10:.6f}",
+        f"- Self-ref consistency(last10): {metric.self_ref_consistency_last10:.6f}",
+        f"- UNGS loss(last10): {metric.ungs_loss_last10:.6f}",
         f"- Phase-like trigger observed: {metric.phase_trigger_like}",
         f"- Next policy: {json.dumps(policy, ensure_ascii=False)}",
         f"- Hypothesis checks: {len(validated)}",

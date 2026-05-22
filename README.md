@@ -54,6 +54,34 @@ Tested on **NVIDIA RTX 4070 Ti** with **TinyStories** dataset.
 
 ---
 
+## 🧭 Latest Progress / 最新进展（2026-05-22）
+
+### UNGS 四批工程化进展
+
+1. 训练侧已完成 UNGS core 接入与损失融合（`CE + axiom_ortho + ungs_loss`），并支持在线结构遥测。
+2. 验收侧已扩展 Gate E（UNGS 涌现门），可直接从主遥测与 core 遥测判定结构涌现。
+3. 自治策略已从固定阈值升级为 `axiom_residual` 驱动，并形成训练期超参回写闭环。
+4. 控制器已升级为 warmup + curriculum 双阶段，并新增 val 恶化保护回调：
+   - `control_phase/control_phase_scale`
+   - `val_worse_streak/val_protection_active/val_protection_triggered`
+
+### 中程 A/B 实证（小模型快测配置）
+
+本次使用同配置、同 seed 的 control vs UNGS 真实运行，汇总见 [midrange_ab_20_50_report.json](midrange_ab_20_50_report.json)。
+
+*   **20 chunks 终点**
+    *   control `val_loss=2.877205`
+    *   UNGS `val_loss=2.402915`
+    *   UNGS 相对收益：`+0.474290`
+*   **50 chunks 终点**
+    *   control `val_loss=3.307245`
+    *   UNGS `val_loss=2.185197`
+    *   UNGS 相对收益：`+1.122048`
+
+结论：在 20 → 50 chunks 区间，UNGS 的泛化优势持续扩大，并非短程偶然波动。
+
+---
+
 ## 🛠️ Usage / 使用方法
 
 ### 1. Install Dependencies / 安装依赖

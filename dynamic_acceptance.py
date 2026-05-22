@@ -39,19 +39,61 @@ def load_baseline(path: Path) -> Dict[str, float]:
     }
 
 
-def load_telemetry(path: Path) -> List[Dict[str, float]]:
+def _pick_float(row: Dict[str, str], keys: List[str]) -> float:
+    for k in keys:
+        if k in row and row.get(k, "") != "":
+            return _safe_float(row.get(k, "nan"))
+    return float("nan")
+
+
+def load_telemetry(path: Path, seq_len: int) -> List[Dict[str, float]]:
+    rows: List[Dict[str, float]] = []
+    with path.open("r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for r in reader:
+            step_per_sec = _pick_float(r, ["StepPerSec"])
+            if math.isnan(step_per_sec):
+                tps = _pick_float(r, ["tokens_per_sec"])
+                if not math.isnan(tps) and seq_len > 0:
+                    step_per_sec = tps / float(seq_len)
+
+            vram_mb = _pick_float(r, ["VRAM_Allocated_MB"])
+            if math.isnan(vram_mb):
+                vram_gb = _pick_float(r, ["vram_alloc_gb"])
+                vram_mb = vram_gb * 1024.0 if not math.isnan(vram_gb) else float("nan")
+
+            rows.append(
+                {
+                    "step": _pick_float(r, ["T_Step", "chunk"]),
+                    # Daemon uses Causal_Loss_EMA, trainer uses val_loss.
+                    "ema": _pick_float(r, ["Causal_Loss_EMA", "val_loss"]),
+                    "sparsity": _pick_float(r, ["Topology_Sparsity", "sta_sparsity"]),
+                    "svd": _pick_float(r, ["SVD_Entropy"]),
+                    "vram_mb": vram_mb,
+                    "step_per_sec": step_per_sec,
+                    "ungs_loss": _pick_float(r, ["ungs_loss"]),
+                    "relation_density": _pick_float(r, ["relation_density"]),
+                    "hierarchy_ratio": _pick_float(r, ["hierarchy_ratio"]),
+                    "self_ref_consistency": _pick_float(r, ["self_ref_consistency"]),
+                }
+            )
+    return rows
+
+
+def load_core_telemetry(path: Path) -> List[Dict[str, float]]:
+    if not path.exists():
+        return []
     rows: List[Dict[str, float]] = []
     with path.open("r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for r in reader:
             rows.append(
                 {
-                    "step": _safe_float(r.get("T_Step", "nan")),
-                    "ema": _safe_float(r.get("Causal_Loss_EMA", "nan")),
-                    "sparsity": _safe_float(r.get("Topology_Sparsity", "nan")),
-                    "svd": _safe_float(r.get("SVD_Entropy", "nan")),
-                    "vram_mb": _safe_float(r.get("VRAM_Allocated_MB", "nan")),
-                    "step_per_sec": _safe_float(r.get("StepPerSec", "nan")),
+                    "chunk": _pick_float(r, ["chunk"]),
+                    "ungs_loss": _pick_float(r, ["ungs_loss"]),
+                    "relation_density": _pick_float(r, ["relation_density"]),
+                    "hierarchy_ratio": _pick_float(r, ["hierarchy_ratio"]),
+                    "self_ref_consistency": _pick_float(r, ["self_ref_consistency"]),
                 }
             )
     return rows
@@ -129,6 +171,21 @@ def evaluate_hypotheses(path: Path) -> Tuple[bool, Dict[str, float]]:
     }
 
 
+def _last_finite(values: List[float]) -> float:
+    for v in reversed(values):
+        if not math.isnan(v):
+            return v
+    return float("nan")
+
+
+def _mean_last(values: List[float], n: int) -> float:
+    finite = [v for v in values if not math.isnan(v)]
+    if not finite:
+        return float("nan")
+    k = min(len(finite), max(1, n))
+    return fmean(finite[-k:])
+
+
 def build_report_md(result: Dict) -> str:
     def _fmt(v: object, digits: int = 6) -> str:
         if isinstance(v, (int, float)):
@@ -143,6 +200,7 @@ def build_report_md(result: Dict) -> str:
     b = result["gates"]["B"]
     c = result["gates"]["C"]
     d = result["gates"]["D"]
+    e = result["gates"]["E"]
 
     lines = [
         "# Dynamic Acceptance Report",
@@ -174,6 +232,14 @@ def build_report_md(result: Dict) -> str:
         f"- pass: {d['pass']}",
         f"- checked={d['checked']}, supported={d['supported']}, support_rate={_fmt(d['support_rate'])}",
         "",
+        "## Gate E (emergence/UNGS)",
+        f"- pass: {e['pass']}",
+        f"- relation_density_last={_fmt(e['relation_density_last'])} (min={_fmt(e['relation_density_min'])})",
+        f"- hierarchy_ratio_last={_fmt(e['hierarchy_ratio_last'])} (min={_fmt(e['hierarchy_ratio_min'])})",
+        f"- self_ref_consistency_last={_fmt(e['self_ref_consistency_last'])} (min={_fmt(e['self_ref_consistency_min'])})",
+        f"- ungs_loss_last={_fmt(e['ungs_loss_last'])} (max={_fmt(e['ungs_loss_max'])})",
+        f"- emergence_data_available={e['data_available']}",
+        "",
     ]
     return "\n".join(lines) + "\n"
 
@@ -194,6 +260,7 @@ def main() -> None:
     p = argparse.ArgumentParser(description="Strict dynamic acceptance for daemon telemetry")
     p.add_argument("--baseline", type=str, default="baseline_snapshot.json")
     p.add_argument("--telemetry", type=str, required=True)
+    p.add_argument("--core-telemetry", type=str, default="")
     p.add_argument("--hypotheses", type=str, default="autopilot_hypotheses.jsonl")
     p.add_argument("--seq-len", type=int, default=1024)
     p.add_argument("--window", type=int, default=20)
@@ -202,15 +269,22 @@ def main() -> None:
     p.add_argument("--sparsity-target", type=float, default=0.50)
     p.add_argument("--svd-min", type=float, default=1.60)
     p.add_argument("--phase-trigger-max", type=int, default=3)
+    p.add_argument("--relation-density-min", type=float, default=0.05)
+    p.add_argument("--hierarchy-ratio-min", type=float, default=0.02)
+    p.add_argument("--self-ref-consistency-min", type=float, default=0.50)
+    p.add_argument("--ungs-loss-max", type=float, default=1.00)
+    p.add_argument("--allow-missing-emergence", action="store_true")
     p.add_argument("--allow-missing-tps", action="store_true")
     p.add_argument("--output-json", type=str, default="acceptance_verdict.json")
     p.add_argument("--output-md", type=str, default="acceptance_report.md")
     args = p.parse_args()
 
     baseline = load_baseline(Path(args.baseline))
-    rows = load_telemetry(Path(args.telemetry))
+    rows = load_telemetry(Path(args.telemetry), seq_len=args.seq_len)
     if not rows:
         raise RuntimeError(f"Empty telemetry: {args.telemetry}")
+
+    core_rows = load_core_telemetry(Path(args.core_telemetry)) if args.core_telemetry else []
 
     ema_values = [r["ema"] for r in rows if not math.isnan(r["ema"])]
     sp_values = [r["sparsity"] for r in rows if not math.isnan(r["sparsity"])]
@@ -286,9 +360,58 @@ def main() -> None:
         **hypo_stats,
     }
 
-    if gate_a["pass"] and gate_b["pass"] and gate_c["pass"] and gate_d["pass"]:
+    rel_vals = [r["relation_density"] for r in rows if not math.isnan(r["relation_density"])]
+    hier_vals = [r["hierarchy_ratio"] for r in rows if not math.isnan(r["hierarchy_ratio"])]
+    self_ref_vals = [r["self_ref_consistency"] for r in rows if not math.isnan(r["self_ref_consistency"])]
+    ungs_vals = [r["ungs_loss"] for r in rows if not math.isnan(r["ungs_loss"])]
+
+    if core_rows:
+        rel_vals.extend([r["relation_density"] for r in core_rows if not math.isnan(r["relation_density"])])
+        hier_vals.extend([r["hierarchy_ratio"] for r in core_rows if not math.isnan(r["hierarchy_ratio"])])
+        self_ref_vals.extend([r["self_ref_consistency"] for r in core_rows if not math.isnan(r["self_ref_consistency"])])
+        ungs_vals.extend([r["ungs_loss"] for r in core_rows if not math.isnan(r["ungs_loss"])])
+
+    rel_last = _last_finite(rel_vals)
+    hier_last = _last_finite(hier_vals)
+    self_ref_last = _last_finite(self_ref_vals)
+    ungs_last = _last_finite(ungs_vals)
+    emergence_available = not (
+        math.isnan(rel_last)
+        or math.isnan(hier_last)
+        or math.isnan(self_ref_last)
+        or math.isnan(ungs_last)
+    )
+
+    gate_e_pass = (
+        emergence_available
+        and rel_last >= args.relation_density_min
+        and hier_last >= args.hierarchy_ratio_min
+        and self_ref_last >= args.self_ref_consistency_min
+        and ungs_last <= args.ungs_loss_max
+    )
+    if (not emergence_available) and args.allow_missing_emergence:
+        gate_e_pass = True
+
+    gate_e = {
+        "pass": gate_e_pass,
+        "data_available": emergence_available,
+        "relation_density_last": rel_last,
+        "relation_density_min": args.relation_density_min,
+        "hierarchy_ratio_last": hier_last,
+        "hierarchy_ratio_min": args.hierarchy_ratio_min,
+        "self_ref_consistency_last": self_ref_last,
+        "self_ref_consistency_min": args.self_ref_consistency_min,
+        "ungs_loss_last": ungs_last,
+        "ungs_loss_max": args.ungs_loss_max,
+        "relation_density_mean_last10": _mean_last(rel_vals, 10),
+        "hierarchy_ratio_mean_last10": _mean_last(hier_vals, 10),
+        "self_ref_consistency_mean_last10": _mean_last(self_ref_vals, 10),
+        "ungs_loss_mean_last10": _mean_last(ungs_vals, 10),
+    }
+
+    if gate_a["pass"] and gate_b["pass"] and gate_c["pass"] and gate_d["pass"] and gate_e["pass"]:
         verdict = "ACCEPT"
-    elif gate_a["pass"] and gate_b["pass"] and gate_c["pass"]:
+    elif gate_a["pass"] and gate_b["pass"] and gate_c["pass"] and gate_e["pass"]:
         verdict = "CONDITIONAL_ACCEPT"
     elif gate_a["pass"]:
         verdict = "RETEST"
@@ -305,6 +428,7 @@ def main() -> None:
             "B": gate_b,
             "C": gate_c,
             "D": gate_d,
+            "E": gate_e,
         },
     }
 
